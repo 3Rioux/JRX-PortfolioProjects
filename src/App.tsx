@@ -1,5 +1,5 @@
 'use client';
-import { Children, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Fuse from 'fuse.js';
 
 import { Input } from '@/components/ui/input';
