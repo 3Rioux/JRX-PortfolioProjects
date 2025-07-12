@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react';
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/JRX-PortfolioProjects.github.io/',
+  base: '/JRX-PortfolioProjects/',
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
