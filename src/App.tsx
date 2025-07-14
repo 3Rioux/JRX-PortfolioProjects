@@ -15,6 +15,11 @@ import clsx from 'clsx';
 //Database GET
 import { supabase } from '@/lib/supabaseClient'; // update path if needed
 
+//Multi Page Routing: 
+import { Routes, Route, Link } from 'react-router-dom';
+import AddProjectForm from '@/components/AddProjectForm.tsx'; // Adjust the path as needed
+
+
 type Project = {
   id: number;
   title: string;
@@ -172,6 +177,7 @@ export default function AdvancedSearchPage() {
             >
               About
             </a>
+            
             {/* <a href="#" className="text-sm hover:underline">
               Contact
             </a> */}
@@ -297,7 +303,19 @@ export default function AdvancedSearchPage() {
             <a href="#">GitHub</a>
             {/* <a href="#">Twitter</a> */}
           </div>
+            <Link
+              to="/add-project"
+              className="text-sm bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            >
+               Add New Project
+            </Link>
         </footer>
+        <div>
+          <Routes>
+            <Route path="/" element={<AdvancedSearchPage />} />
+            <Route path="/add-project" element={<AddProjectForm />} />
+          </Routes>
+        </div>
       </div>
     </div>
   );
