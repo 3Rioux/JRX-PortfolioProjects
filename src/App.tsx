@@ -186,6 +186,7 @@ export default function AdvancedSearchPage() {
             <ModeToggle />
           </ThemeProvider>
         </header>
+
         {/* Search Bar */}
         <div className="mb-4">
           <Input
@@ -210,7 +211,7 @@ export default function AdvancedSearchPage() {
         </div>
         {/* Project Cards Grid */}
         {loading ? (
-          <p>Loading projects...</p>
+          <p className="text-bg font-bold text-primary">Loading projects...</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredProjects.map((project) => (
