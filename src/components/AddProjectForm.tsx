@@ -95,7 +95,11 @@ const handleSubmit = async (e: React.FormEvent) => {
 
     const { error: uploadError } = await supabase.storage
       .from('project-images')
-      .upload(filePath, file);
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false, // prevents overwriting existing files
+        contentType: file.type,
+      });
 
     if (uploadError) {
       setMessage('❌Image Upload failed: ' + uploadError.message);
@@ -103,11 +107,12 @@ const handleSubmit = async (e: React.FormEvent) => {
       return;
     }
 
-    const { data: publicUrl } = supabase.storage
+    const { data: publicUrlData } = supabase.storage
       .from('project-images')
       .getPublicUrl(filePath);
 
-    imageUrls.push(publicUrl?.publicUrl || '');
+    imageUrls.push(publicUrlData?.publicUrl || '');
+   
   }
 
 
@@ -116,7 +121,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       title,
       description,
       tags: tags.split(',').map((tag) => tag.trim()),
-      image_url: imageUrls[0], // You can store the first image as a cover
+      image_url: imageUrls, 
       user_id: user?.id,
       // Optionally store more images in a separate table
     },
