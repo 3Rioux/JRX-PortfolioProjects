@@ -90,8 +90,10 @@ const handleSubmit = async (e: React.FormEvent) => {
 
   for (const file of imageFiles) {
     const ext = file.name.split('.').pop();
+    const safeTitle = title.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, ''); // sanitize folder name
     const fileName = `${Date.now()}-${Math.random().toString(36).substr(2, 5)}.${ext}`;
-    const filePath = `${fileName}`;
+    //const filePath = `${fileName}`;
+    const filePath = `${safeTitle}/${fileName}`; // 👈 uploads to subfolder named by title
 
     const { error: uploadError } = await supabase.storage
       .from('project-images')
