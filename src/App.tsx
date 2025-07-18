@@ -18,7 +18,7 @@ import { supabase } from '@/lib/supabaseClient'; // update path if needed
 //Multi Page Routing: 
 import { Routes, Route, Link } from 'react-router-dom';
 import AddProjectForm from '@/components/AddProjectForm.tsx'; // Adjust the path as needed
-
+import LoginForm from '@/components/LoginForm.tsx';
 
 type Project = {
   id: number;
@@ -309,11 +309,18 @@ export default function AdvancedSearchPage() {
             >
                Add New Project
             </Link>
+            <Link
+              to="/login"
+              className="text-sm bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            >
+              Login
+            </Link>
         </footer>
         <div>
           <Routes>
             <Route path="/" element={<AdvancedSearchPage />} />
             <Route path="/add-project" element={<AddProjectForm />} />
+            <Route path="/login" element={<LoginForm />} />
           </Routes>
         </div>
       </div>
