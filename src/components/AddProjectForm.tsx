@@ -1,7 +1,12 @@
-import { useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { supabase } from '../lib/supabaseClient';
+import type { User } from '@supabase/supabase-js';
+
+// const { data: { user } } = await supabase.auth.getUser(); //Get Logged in user 
 
 export default function AddProjectForm() {
+  const [user, setUser] = useState<User | null>(null); // 👈 new user state
+
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [tags, setTags] = useState('');
@@ -11,6 +16,20 @@ export default function AddProjectForm() {
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Fetch the user on mount
+  useEffect(() => {
+    const getUser = async () => {
+      const { data, error } = await supabase.auth.getUser();
+      if (error) {
+        console.error('Error fetching user:', error.message);
+      } else {
+        setUser(data.user);
+      }
+    };
+
+    getUser();
+  }, []);
 
   //Drag & Drop
   const dropRef = useRef<HTMLDivElement>(null);
@@ -60,6 +79,13 @@ const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
   setLoading(true);
 
+//CHECK LOGGIN  
+  if (!user) {
+    setMessage('User not authenticated');
+    setLoading(false);
+    return;
+  }
+
   const imageUrls: string[] = [];
 
   for (const file of imageFiles) {
@@ -72,7 +98,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       .upload(filePath, file);
 
     if (uploadError) {
-      setMessage('❌ Upload failed: ' + uploadError.message);
+      setMessage('❌Image Upload failed: ' + uploadError.message);
       setLoading(false);
       return;
     }
@@ -84,12 +110,14 @@ const handleSubmit = async (e: React.FormEvent) => {
     imageUrls.push(publicUrl?.publicUrl || '');
   }
 
+
   const { error } = await supabase.from('projects').insert([
     {
       title,
       description,
       tags: tags.split(',').map((tag) => tag.trim()),
       image_url: imageUrls[0], // You can store the first image as a cover
+      user_id: user?.id,
       // Optionally store more images in a separate table
     },
   ]);
@@ -215,6 +243,13 @@ const handleSubmit = async (e: React.FormEvent) => {
         </button>
         {message && <p className="text-sm mt-2">{message}</p>}
       </form>
+      <div>
+      {user ? (
+        <p>Adding Under User - {user.email}</p>
+      ) : (
+        <p>Not logged in</p>
+      )}
+    </div>
     </div>
   );
 }
