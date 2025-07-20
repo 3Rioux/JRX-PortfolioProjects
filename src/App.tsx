@@ -19,14 +19,20 @@ import { supabase } from '@/lib/supabaseClient'; // update path if needed
 import { Routes, Route, Link } from 'react-router-dom';
 import AddProjectForm from '@/components/AddProjectForm.tsx'; // Adjust the path as needed
 import LoginForm from '@/components/LoginForm.tsx';
+import ProjectModal from "@/components/ProjectModal.tsx";
 
 type Project = {
   id: number;
   title: string;
   image_url?: string[];
-  description: string;
   tags: string[];
+  description: string;
+  contribution?: string;
+  software: { name: string; icon: string }[]; // icon is a URL
+  github?: string;
+  itch?: string;
 };
+
 
 export default function AdvancedSearchPage() {
   const genres = ['Web', 'Mobile', 'Branding', 'Illustration'];
@@ -42,6 +48,9 @@ export default function AdvancedSearchPage() {
 
   const [projectData, setProjectData] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+
+  //Pop-up Model:
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   // const projectData = [
   //   {
@@ -246,9 +255,20 @@ export default function AdvancedSearchPage() {
                       </Badge>
                     ))}
                   </div>
-                  <Button variant="link" className="mt-2 p-0 text-blue-600">
+                  <Button variant="link" 
+                  className="mt-2 p-0 text-blue-600"
+                  onClick={() => setSelectedProject(project)}
+                  > 
                     View Details →
                   </Button>
+                  {/* Show modal if selected */}
+                  {selectedProject && (
+                    <ProjectModal
+                      isOpen={!!selectedProject}
+                      onClose={() => setSelectedProject(null)}
+                      project={selectedProject}
+                    />
+                  )}
                 </CardContent>
               </Card>
             ))}
