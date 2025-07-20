@@ -23,7 +23,7 @@ import LoginForm from '@/components/LoginForm.tsx';
 type Project = {
   id: number;
   title: string;
-  image_url?: string;
+  image_url?: string[];
   description: string;
   tags: string[];
 };
@@ -149,12 +149,12 @@ export default function AdvancedSearchPage() {
   //     setIsDark(true);
   //   }
   // }, []);
-
+  
   return (
     <div className="bg-background text-foreground">
-      <div className="min-h-screen  p-4 md:p-10 text-gray-900">
-        {/* Navbar */}
-        <header className="header-projects flex justify-between items-center mb-6 sticky top-0 z-10 shadow-sm p-4 rounded-xl">
+            <div className="min-h-screen  p-4 md:p-10 text-gray-900">
+      {/* Navbar */}
+      <header className="header-projects flex justify-between items-center mb-6 sticky top-0 z-10 shadow-sm p-4 rounded-xl">
           <h1 className="text-xl dark:text-white">
             Justin Rioux's{' '}
             <span className="font-bold text-primary">Projects</span>
@@ -197,7 +197,7 @@ export default function AdvancedSearchPage() {
         <div className="mb-4">
           <Input
             placeholder="Search projects by name or tag..."
-            className="rounded-full px-4 py-2"
+            className="rounded-full px-4 py-2 dark:text-white"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -216,6 +216,7 @@ export default function AdvancedSearchPage() {
           ))}
         </div>
         {/* Project Cards Grid */}
+        
         {loading ? (
           <p className="text-bg font-bold text-primary">Loading projects...</p>
         ) : (
@@ -223,9 +224,9 @@ export default function AdvancedSearchPage() {
             {filteredProjects.map((project) => (
               <Card key={project.id} className="hover:shadow-lg transition-all">
                 <CardContent className="p-4">
-                  {project.image_url ? (
+                  {Array.isArray(project.image_url) && project.image_url.length > 0  ? (
                     <img
-                      src={project.image_url}
+                      src={project.image_url[0]}
                       alt={project.title}
                       className="w-full aspect-video object-cover rounded-xl mb-3"
                     />
