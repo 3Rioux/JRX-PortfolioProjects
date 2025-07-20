@@ -10,6 +10,22 @@ export default function AddProjectForm() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [tags, setTags] = useState('');
+  const [contribution, setContribution] = useState('');
+  // const [softwareList, setSoftwareList] = useState([{ name: '', icon: '' }]);
+  const [softwareList, setSoftwareList] = useState<{ name: string; icon: string }[]>([]);
+  const [softwareName, setSoftwareName] = useState('');
+  const [softwareIcon, setSoftwareIcon] = useState('');
+  // Sample list of Lucide icon names to choose from (you can expand this)
+  const lucideIcons = [
+    { label: 'Gamepad', value: 'Gamepad' },
+    { label: 'Code', value: 'Code' },
+    { label: 'Database', value: 'Database' },
+    { label: 'Paintbrush', value: 'paintbrush' },
+    { label: 'Settings', value: 'settings' },
+  ];
+
+  const [githubLink, setGithubLink] = useState('');
+  const [itchLink, setItchLink] = useState('');
   // const [imageFile, setImageFile] = useState<File | null>(null);
   // const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
@@ -125,6 +141,10 @@ const handleSubmit = async (e: React.FormEvent) => {
       tags: tags.split(',').map((tag) => tag.trim()),
       image_url: imageUrls, 
       user_id: user?.id,
+      contribution,
+      software: softwareList,
+      github_link: githubLink,
+      itch_link: itchLink,
       // Optionally store more images in a separate table
     },
   ]);
@@ -136,6 +156,9 @@ const handleSubmit = async (e: React.FormEvent) => {
     setTitle('');
     setDescription('');
     setTags('');
+    setContribution('');
+    setGithubLink('');
+    setItchLink('');
     setImageFiles([]);
     setPreviewUrls([]);
   }
@@ -177,6 +200,95 @@ const handleSubmit = async (e: React.FormEvent) => {
           accept="image/*"
           onChange={(e) => setImageFile(e.target.files?.[0] || null)}
         /> */}
+
+        <textarea
+          placeholder="Your Role / Contribution"
+          value={contribution}
+          onChange={(e) => setContribution(e.target.value)}
+          className="p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white"
+        />
+
+        {/* Dynamic Software List */}
+        <div className="space-y-2">
+          <label className="block font-medium text-sm dark:text-white">Software Used</label>
+          {softwareList.map((item, index) => (
+            <div key={index} className="flex gap-2 items-center">
+              <input
+                type="text"
+                placeholder="Name"
+                value={item.name}
+                onChange={(e) => {
+                  const newList = [...softwareList];
+                  newList[index].name = e.target.value;
+                  setSoftwareList(newList);
+                }}
+                className="p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white w-1/2"
+              />
+              
+              <select
+                value={item.icon}
+                // onChange={(e) => setSoftwareIcon(e.target.value)}
+                onChange={(e) => {
+                  const newList = [...softwareList];
+                  newList[index].icon = e.target.value;
+                  setSoftwareList(newList);
+                }}
+                className="p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white flex-1"
+              >
+                <option value="">Select icon</option>
+                {lucideIcons.map((icon) => (
+                  <option key={icon.value} value={icon.value}>
+                    {icon.label}
+                  </option>
+                ))}
+              </select>
+              <input
+                type="text"
+                placeholder="Icon URL or file name"
+                value={item.icon}
+                onChange={(e) => {
+                  const newList = [...softwareList];
+                  newList[index].icon = e.target.value;
+                  setSoftwareList(newList);
+                }}
+                className="p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white w-1/2"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  const newList = softwareList.filter((_, i) => i !== index);
+                  setSoftwareList(newList);
+                }}
+                className="text-red-500 text-sm"
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() => setSoftwareList([...softwareList, { name: '', icon: '' }])}
+            className="text-blue-600 text-sm mt-1"
+          >
+            + Add Software
+          </button>
+        </div>
+
+        {/* Optional links */}
+        <input
+          type="url"
+          placeholder="Project GitHub Link"
+          value={githubLink}
+          onChange={(e) => setGithubLink(e.target.value)}
+          className="p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white"
+        />
+        <input
+          type="url"
+          placeholder="Project Itch.io Link"
+          value={itchLink}
+          onChange={(e) => setItchLink(e.target.value)}
+          className="p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white"
+        />
 
         {/* Drag & Drop Upload Area */}
         <div

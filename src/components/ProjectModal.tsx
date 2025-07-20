@@ -1,6 +1,7 @@
-import { Dialog, Transition } from "@headlessui/react";
+import {DialogPanel, Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
-import { X, Github, Globe } from "lucide-react";
+import { X, Github, Globe, Gamepad, Code, Database } from "lucide-react";
+
 
 
 interface ProjectModalProps {
@@ -18,15 +19,16 @@ interface ProjectModalProps {
         <Dialog onClose={onClose} className="fixed inset-0 z-50">
           <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" aria-hidden="true" />
           <div className="fixed inset-0 flex items-center justify-center p-4 overflow-y-auto">
-            <Dialog.Panel className="w-full max-w-3xl bg-white rounded-2xl shadow-xl p-4 relative">
+            <DialogPanel className="w-full max-w-3xl bg-white rounded-2xl shadow-xl p-4 relative">
               {/* Close Button */}
-              <button
-                onClick={onClose}
-                className="absolute top-3 right-3 text-gray-500 hover:text-black"
-              >
-                <X className="w-5 h-5" />
-              </button>
-  
+              <div className="mb-5">
+                <button
+                  onClick={onClose}
+                  className="absolute top-3 right-3 text-gray-500 hover:text-black"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
               {/* Image Carousel */}
               <div className="mb-4">
                 {images.length > 0 && (
@@ -80,18 +82,17 @@ interface ProjectModalProps {
   
               {/* External Links */}
               <div className="flex gap-4">
-                {project.github && (
+
                   <a href={project.github} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-blue-600 hover:underline">
                     <Github className="w-4 h-4" /> GitHub
                   </a>
-                )}
-                {project.itch && (
+
                   <a href={project.itch} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-pink-600 hover:underline">
-                    <Globe className="w-4 h-4" /> Itch.io
+                  <Globe className="w-4 h-4" /> Itch.io
                   </a>
-                )}
+
               </div>
-            </Dialog.Panel>
+            </DialogPanel>
           </div>
         </Dialog>
       </Transition>
