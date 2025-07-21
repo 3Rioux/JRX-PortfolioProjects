@@ -113,17 +113,19 @@ interface ProjectModalProps {
               )}
   
               {/* External Links */}
-              <div className="flex gap-4">
-
-                  <a href={project.github} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-blue-600 hover:underline" style={{ cursor: 'pointer' }}>
-                    <Github className="w-4 h-4" /> GitHub
-                  </a>
-
-                  <a href={project.itch} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-pink-600 hover:underline" style={{ cursor: 'pointer' }}>
-                  <Globe className="w-4 h-4" /> Itch.io
-                  </a>
-
-              </div>
+              
+                <div className="flex gap-4">
+                  {project.github_link && (
+                    <a href={project.github_link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-blue-600 hover:underline" style={{ cursor: 'pointer' }}>
+                      <Github className="w-4 h-4" /> GitHub
+                    </a>
+                  )}
+                  {project.itch_link && (
+                    <a href={project.itch_link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-pink-600 hover:underline" style={{ cursor: 'pointer' }}>
+                    <Globe className="w-4 h-4" /> Itch.io
+                    </a>
+                  )}
+                </div> 
             </DialogPanel>
           </div>
         </Dialog>

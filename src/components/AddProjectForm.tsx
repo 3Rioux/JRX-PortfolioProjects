@@ -184,11 +184,20 @@ const handleSubmit = async (e: React.FormEvent) => {
 
   return (
     <div className="bg-muted text-foreground border shadow-sm p-4 rounded-xl max-w-xl mx-auto mt-10">
+      
+      <div className="flex flex-col gap-2 max-w-md mx-auto dark:text-violet-500">
+        {user ? (
+          <p className='border-4 border-solid text-center'>Adding Under User - {user.email}</p>
+        ) : (
+          <p>Not logged in</p>
+        )}
+      </div>
+      
       <form
         onSubmit={handleSubmit}
         className="flex flex-col gap-2 max-w-md mx-auto"
       >
-        <h2 className="font-semibold mb-1 text-xl dark:text-white">Add a Project</h2>
+        <h2 className="font-bold mb-1 text-xl dark:text-white">Add a Project</h2>
         <input
           type="text"
           placeholder="Title"
@@ -378,13 +387,7 @@ const handleSubmit = async (e: React.FormEvent) => {
         </button>
         {message && <p className="text-sm mt-2">{message}</p>}
       </form>
-      <div>
-      {user ? (
-        <p>Adding Under User - {user.email}</p>
-      ) : (
-        <p>Not logged in</p>
-      )}
-    </div>
+      
     </div>
   );
 }

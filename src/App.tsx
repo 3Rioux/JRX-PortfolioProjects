@@ -30,9 +30,9 @@ type Project = {
   tags: string[];
   description: string;
   contribution?: string;
+  github_link?: string;
+  itch_link?: string;
   software: { name: string; icon: string }[]; // icon is a URL
-  github?: string;
-  itch?: string;
 };
 
 
