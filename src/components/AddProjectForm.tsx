@@ -16,12 +16,30 @@ export default function AddProjectForm() {
   const [softwareName, setSoftwareName] = useState('');
   const [softwareIcon, setSoftwareIcon] = useState('');
   // Sample list of Lucide icon names to choose from (you can expand this)
-  const lucideIcons = [
-    { label: 'Gamepad', value: 'Gamepad' },
-    { label: 'Code', value: 'Code' },
-    { label: 'Database', value: 'Database' },
-    { label: 'Paintbrush', value: 'paintbrush' },
-    { label: 'Settings', value: 'settings' },
+  const iconsList = [
+    { label: 'AWS', value: 'faAws' },
+    { label: 'CSS3', value: 'faCss3Alt' },
+    { label: 'Jira', value: 'faJira' },
+    { label: 'Meta (Facebook)', value: 'faMeta' },
+    { label: 'PHP', value: 'faPhp' },
+    { label: 'Sass', value: 'faSass' },
+    { label: 'Ubuntu', value: 'faUbuntu' },
+    { label: 'Steam', value: 'faSteam' },
+    { label: 'Trello', value: 'faTrello' },
+    { label: 'Unity', value: 'faUnity' },
+    { label: 'Atlassian', value: 'faAtlassian' },
+    { label: 'Node.js', value: 'faNode' },
+    { label: 'Microsoft', value: 'faMicrosoft' },
+    { label: 'Java', value: 'faJava' },
+    { label: 'JavaScript', value: 'faSquareJs' },
+    { label: 'React', value: 'faReact' },
+    { label: 'HTML5', value: 'faHtml5' },
+    { label: 'LinkedIn', value: 'faLinkedin' },
+    { label: 'Itch.io', value: 'faItchIo' },
+    { label: 'GitHub', value: 'faGithub' },
+    { label: 'GitHub Square', value: 'faSquareGithub' },
+    { label: 'Twitter', value: 'faTwitter' },
+    { label: 'Font Awesome', value: 'faFontAwesome' },
   ];
 
   const [githubLink, setGithubLink] = useState('');
@@ -236,7 +254,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                 className="p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white flex-1"
               >
                 <option value="">Select icon</option>
-                {lucideIcons.map((icon) => (
+                {iconsList.map((icon) => (
                   <option key={icon.value} value={icon.value}>
                     {icon.label}
                   </option>

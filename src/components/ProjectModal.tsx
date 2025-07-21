@@ -1,7 +1,35 @@
 import {DialogPanel, Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
-import { X, Github, Globe, Gamepad, Code, Database } from "lucide-react";
+import { X, Github, Globe } from "lucide-react";
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faAws, faCss3Alt, faJira, faMeta, faPhp, faSass, faUbuntu, faSteam, faTrello, faUnity, faAtlassian, faNode, faMicrosoft, faJava, faSquareJs, faReact, faHtml5, faLinkedin, faItchIo, faGithub, faSquareGithub, faTwitter, faFontAwesome } from '@fortawesome/free-brands-svg-icons';
+
+const iconMap: Record<string, any> = {
+  faAws,
+  faCss3Alt,
+  faJira,
+  faMeta,
+  faPhp,
+  faSass,
+  faUbuntu,
+  faSteam,
+  faTrello,
+  faUnity,
+  faAtlassian,
+  faNode,
+  faMicrosoft,
+  faJava,
+  faSquareJs,
+  faReact,
+  faHtml5,
+  faLinkedin,
+  faItchIo,
+  faGithub,
+  faSquareGithub,
+  faTwitter,
+  faFontAwesome,
+};
 
 
 interface ProjectModalProps {
@@ -14,6 +42,7 @@ interface ProjectModalProps {
   export default function ProjectModal({ isOpen, onClose, project }: ProjectModalProps) {
     const images: string[] = Array.isArray(project.image_url) ? project.image_url : [project.image_url];
   
+
     return (
       <Transition show={isOpen} as={Fragment}>
         <Dialog onClose={onClose} className="fixed inset-0 z-50">
@@ -72,8 +101,11 @@ interface ProjectModalProps {
                   <div className="flex flex-wrap gap-2">
                     {project.software.map((soft: any) => (
                       <div key={soft.name} className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded">
-                        <img src={soft.icon} alt={soft.name} className="w-4 h-4" />
-                        <span className="text-sm">{soft.name}</span>
+                        {/* <img src={soft.icon} alt={soft.name} className="w-4 h-4" /> */}
+                        {iconMap[soft.icon] && (
+                          <FontAwesomeIcon icon={iconMap[soft.icon]} className="w-4 h-4" />
+                        )}
+                        <span className="text-sm"> {soft.name}</span>
                       </div>
                     ))}
                   </div>
