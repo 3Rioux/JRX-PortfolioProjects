@@ -13,8 +13,6 @@ export default function AddProjectForm() {
   const [contribution, setContribution] = useState('');
   // const [softwareList, setSoftwareList] = useState([{ name: '', icon: '' }]);
   const [softwareList, setSoftwareList] = useState<{ name: string; icon: string }[]>([]);
-  const [softwareName, setSoftwareName] = useState('');
-  const [softwareIcon, setSoftwareIcon] = useState('');
   // Sample list of Lucide icon names to choose from (you can expand this)
   const iconsList = [
     { label: 'AWS', value: 'faAws' },

@@ -16,10 +16,12 @@ import clsx from 'clsx';
 import { supabase } from '@/lib/supabaseClient'; // update path if needed
 
 //Multi Page Routing: 
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import AddProjectForm from '@/components/AddProjectForm.tsx'; // Adjust the path as needed
 import LoginForm from '@/components/LoginForm.tsx';
 import ProjectModal from "@/components/ProjectModal.tsx";
+import ProtectedRoute from '@/components/ProtectedRoute.tsx';
+import { useAuth } from '@/components/AuthContext';
 
 type Project = {
   id: number;
@@ -35,6 +37,15 @@ type Project = {
 
 
 export default function AdvancedSearchPage() {
+  //Login:
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/login'); // Optional: redirect to login after logout
+  };
+  
   const genres = ['Web', 'Mobile', 'Branding', 'Illustration'];
   const types = ['Client Work', 'Case Study', 'Concept', 'Freelance'];
   const allTags = [...genres, ...types];
@@ -325,28 +336,47 @@ export default function AdvancedSearchPage() {
             <a href="#">LinkedIn</a>
             <a href="#">GitHub</a>
             {/* <a href="#">Twitter</a> */}
-            <Link
-              to="/add-project"
-              // className="text-sm bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-              className={'cursor-pointer select-none text-md'}
-            >
-               Add New Project
-            </Link>
-            <Link
-              to="/login"
-              // className="text-sm bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-              className={clsx('cursor-pointer select-none text-md')}
-            >
-              Login
-            </Link>
+            {user && (
+              <Link
+                to="/add-project"
+                // className="text-sm bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                className={'cursor-pointer select-none text-md'}
+              >
+                Add New Project
+              </Link>
+            )}
+            {!user ? (
+              <Link
+                to="/login"
+                // className="text-sm bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                className={clsx('cursor-pointer select-none text-md')}
+              >
+                Login
+              </Link>
+            ) : (
+              <button
+                onClick={handleLogout}
+                className={clsx('cursor-pointer select-none text-md text-red-600')}
+              >
+                Logout
+              </button>
+            )}
           </div>
             
         </footer>
         <div>
           <Routes>
             <Route path="/" element={<AdvancedSearchPage />} />
-            <Route path="/add-project" element={<AddProjectForm />} />
+            {/* <Route path="/add-project" element={<AddProjectForm />} /> */}
             <Route path="/login" element={<LoginForm />} />
+            <Route
+              path="/add-project"
+              element={
+                <ProtectedRoute>
+                  <AddProjectForm />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
         </div>
       </div>

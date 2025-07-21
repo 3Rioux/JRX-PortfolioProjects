@@ -1,10 +1,13 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabaseClient';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+
+  const navigate = useNavigate(); // initialize the navigate function
 
   const handleLogin = async () => {
     const { error } = await supabase.auth.signInWithPassword({
@@ -16,6 +19,7 @@ export default function Login() {
       setMessage(`Login failed: ${error.message}`);
     } else {
       setMessage('Logged in successfully!');
+      navigate('/add-project'); // redirect after successful login
     }
   };
 
