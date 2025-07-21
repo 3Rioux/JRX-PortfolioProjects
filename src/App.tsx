@@ -176,7 +176,7 @@ export default function AdvancedSearchPage() {
             >
               Home
             </a>
-            <a href="#" className="text-sm hover:underline">
+            <a href="https://jrxportfolioprojects-0y4z--5173--96435430.local-credentialless.webcontainer.io/JRX-PortfolioProjects/" className="text-sm hover:underline">
               Projects
             </a>
             <a
@@ -224,15 +224,15 @@ export default function AdvancedSearchPage() {
             </Badge>
           ))}
         </div>
+
         {/* Project Cards Grid */}
-        
         {loading ? (
           <p className="text-bg font-bold text-primary">Loading projects...</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredProjects.map((project) => (
               <Card key={project.id} className="hover:shadow-lg transition-all">
-                <CardContent className="p-4">
+                <CardContent className="p-4 flex flex-col h-full">
                   {Array.isArray(project.image_url) && project.image_url.length > 0  ? (
                     <img
                       src={project.image_url[0]}
@@ -255,12 +255,14 @@ export default function AdvancedSearchPage() {
                       </Badge>
                     ))}
                   </div>
-                  <Button variant="link" 
-                  className="mt-2 p-0 text-blue-600"
-                  onClick={() => setSelectedProject(project)}
-                  > 
-                    View Details →
-                  </Button>
+                  <div className="mt-auto">
+                    <Button variant="link" 
+                    className="mt-2 p-0 text-blue-600"
+                    onClick={() => setSelectedProject(project)}
+                    > 
+                      View Details →
+                    </Button>
+                  </div>
                   {/* Show modal if selected */}
                   {selectedProject && (
                     <ProjectModal
@@ -323,19 +325,22 @@ export default function AdvancedSearchPage() {
             <a href="#">LinkedIn</a>
             <a href="#">GitHub</a>
             {/* <a href="#">Twitter</a> */}
-          </div>
             <Link
               to="/add-project"
-              className="text-sm bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              // className="text-sm bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              className={'cursor-pointer select-none text-md'}
             >
                Add New Project
             </Link>
             <Link
               to="/login"
-              className="text-sm bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              // className="text-sm bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              className={clsx('cursor-pointer select-none text-md')}
             >
               Login
             </Link>
+          </div>
+            
         </footer>
         <div>
           <Routes>

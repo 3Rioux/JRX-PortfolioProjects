@@ -97,7 +97,7 @@ interface ProjectModalProps {
               {/* Software Used */}
               {project.software && (
                 <div className="mb-4">
-                  <h4 className="font-semibold mb-1">Software Used</h4>
+                  <h4 className="font-semibold mb-1">Tech Stack</h4>
                   <div className="flex flex-wrap gap-2">
                     {project.software.map((soft: any) => (
                       <div key={soft.name} className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded">
@@ -115,11 +115,11 @@ interface ProjectModalProps {
               {/* External Links */}
               <div className="flex gap-4">
 
-                  <a href={project.github} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-blue-600 hover:underline">
+                  <a href={project.github} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-blue-600 hover:underline" style={{ cursor: 'pointer' }}>
                     <Github className="w-4 h-4" /> GitHub
                   </a>
 
-                  <a href={project.itch} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-pink-600 hover:underline">
+                  <a href={project.itch} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-pink-600 hover:underline" style={{ cursor: 'pointer' }}>
                   <Globe className="w-4 h-4" /> Itch.io
                   </a>
 
