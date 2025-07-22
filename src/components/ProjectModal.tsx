@@ -1,5 +1,5 @@
 import {DialogPanel, Dialog, Transition } from "@headlessui/react";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import { X, Github, Globe } from "lucide-react";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -43,12 +43,18 @@ interface ProjectModalProps {
     const images: string[] = Array.isArray(project.image_url) ? project.image_url : [project.image_url];
   
 
+    // Image Carousel:
+    const [current, setCurrent] = useState(0);
+
+    const next = () => setCurrent((c) => Math.min(c + 1, images.length - 1));
+    const prev = () => setCurrent((c) => Math.max(c - 1, 0));
+
     return (
       <Transition show={isOpen} as={Fragment}>
         <Dialog onClose={onClose} className="fixed inset-0 z-50">
-          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" aria-hidden="true" />
+          <div className="fixed inset-0 backdrop-blur-sm" aria-hidden="true" />
           <div className="fixed inset-0 flex items-center justify-center p-4 overflow-y-auto">
-            <DialogPanel className="w-full max-w-3xl bg-white rounded-2xl shadow-xl p-4 relative">
+            <DialogPanel className="w-full max-w-screen-md max-h-screen overflow-y-auto max-w-7xl bg-white rounded-2xl shadow-xl p-4 relative">
               {/* Close Button */}
               <div className="mb-5">
                 <button
@@ -59,7 +65,7 @@ interface ProjectModalProps {
                 </button>
               </div>
               {/* Image Carousel */}
-              <div className="mb-4">
+              {/* <div className="mb-4">
                 {images.length > 0 && (
                   <div className="w-full overflow-x-auto whitespace-nowrap rounded-xl">
                     {images.map((img, i) => (
@@ -72,7 +78,32 @@ interface ProjectModalProps {
                     ))}
                   </div>
                 )}
-              </div>
+              </div> */}
+                  <div className="relative w-full aspect-video overflow-hidden rounded-xl mb-4">
+                    <img
+                      src={images[current]}
+                      alt={`Screenshot ${current + 1}`}
+                      className="w-full h-full object-cover rounded-xl transition-opacity duration-300"
+                    />
+
+                    <button
+                      onClick={prev}
+                      disabled={current === 0}
+                      className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white text-black rounded-full p-2 disabled:opacity-50"
+                      aria-label="Previous image"
+                    >
+                      ❮
+                    </button>
+
+                    <button
+                      onClick={next}
+                      disabled={current === images.length - 1}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white text-black rounded-full p-2 disabled:opacity-50"
+                      aria-label="Next image"
+                    >
+                      ❯
+                    </button>
+                  </div>
   
               {/* Content */}
               <h2 className="text-2xl font-bold mb-1">{project.title}</h2>
