@@ -1,6 +1,6 @@
 import {DialogPanel, Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
-import { X, Github, Globe } from "lucide-react";
+import { X, Github, Globe, SquareArrowOutUpRight } from "lucide-react";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAws, faCss3Alt, faJira, faMeta, faPhp, faSass, faUbuntu, faSteam, faTrello, faUnity, faAtlassian, faNode, faMicrosoft, faJava, faSquareJs, faReact, faHtml5, faLinkedin, faItchIo, faGithub, faSquareGithub, faTwitter, faFontAwesome } from '@fortawesome/free-brands-svg-icons';
@@ -106,7 +106,15 @@ interface ProjectModalProps {
                   </div>
   
               {/* Content */}
-              <h2 className="text-2xl font-bold mb-1">{project.title}</h2>
+              <div className="flex flex-wrap gap-2 mb-4">
+                <h2 className="text-2xl font-bold mb-1">{project.title}</h2>
+                <h2 className="text-gray-700 text-2xl font-bold mb-1"> - </h2>
+                {project.members <= 1 ? (
+                  <h2 className="text-gray-700 text-2xl font-bold mb-1">Team Members 1</h2>
+                ) : (
+                  <h2 className="text-gray-700 text-2xl font-bold mb-1">Team Members {project.members}</h2>
+                )}
+              </div>
               <p className="text-gray-700 mb-2">{project.description}</p>
   
               {/* Contribution */}
@@ -148,12 +156,12 @@ interface ProjectModalProps {
                 <div className="flex gap-4">
                   {project.github_link && (
                     <a href={project.github_link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-blue-600 hover:underline" style={{ cursor: 'pointer' }}>
-                      <Github className="w-4 h-4" /> GitHub
+                      <SquareArrowOutUpRight /><Github className="w-4 h-4" /> GitHub
                     </a>
                   )}
                   {project.itch_link && (
                     <a href={project.itch_link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-pink-600 hover:underline" style={{ cursor: 'pointer' }}>
-                    <Globe className="w-4 h-4" /> Itch.io
+                    <SquareArrowOutUpRight /> <FontAwesomeIcon icon={faItchIo} className="w-4 h-4"  /> Itch.io
                     </a>
                   )}
                 </div> 

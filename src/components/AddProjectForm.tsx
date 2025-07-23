@@ -8,6 +8,7 @@ export default function AddProjectForm() {
   const [user, setUser] = useState<User | null>(null); // 👈 new user state
 
   const [title, setTitle] = useState('');
+  const [members, setMembers] = useState('');
   const [description, setDescription] = useState('');
   const [tags, setTags] = useState('');
   const [contribution, setContribution] = useState('');
@@ -153,6 +154,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   const { error } = await supabase.from('projects').insert([
     {
       title,
+      members,
       description,
       tags: tags.split(',').map((tag) => tag.trim()),
       image_url: imageUrls, 
@@ -170,6 +172,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   } else {
     setMessage('✅ Project added!');
     setTitle('');
+    setMembers('');
     setDescription('');
     setTags('');
     setContribution('');
@@ -206,6 +209,13 @@ const handleSubmit = async (e: React.FormEvent) => {
           required
           className="p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white"
         />
+        <input
+          type="number"
+          placeholder="# of members working of project (int)"
+          value={members}
+          onChange={(e) => setMembers(e.target.value)}
+          className="p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white"
+        />
         <textarea
           placeholder="Description"
           value={description}
@@ -227,7 +237,7 @@ const handleSubmit = async (e: React.FormEvent) => {
         /> */}
 
         <textarea
-          placeholder="Your Role / Contribution"
+          placeholder="Your Role / Contribution (Role 1 - Role 2 - Role 3 - ...)"
           value={contribution}
           onChange={(e) => setContribution(e.target.value)}
           className="p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white"

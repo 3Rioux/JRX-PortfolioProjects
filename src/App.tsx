@@ -26,6 +26,7 @@ import { useAuth } from '@/components/AuthContext';
 type Project = {
   id: number;
   title: string;
+  members: number;
   image_url?: string[];
   tags: string[];
   description: string;
@@ -174,7 +175,7 @@ export default function AdvancedSearchPage() {
     <div className="bg-background text-foreground">
             <div className="min-h-screen  p-4 md:p-10 text-gray-900">
       {/* Navbar */}
-      <header className="header-projects flex justify-between items-center mb-6 sticky top-0 z-10 shadow-sm p-4 rounded-xl">
+      <header className="header-projects flex justify-between items-center mb-6 sticky top-0 z-10 shadow-sm p-4 rounded-xl backdrop-blur-sm">
           <h1 className="text-xl dark:text-white">
             Justin Rioux's{' '}
             <span className="font-bold text-primary">Projects</span>
