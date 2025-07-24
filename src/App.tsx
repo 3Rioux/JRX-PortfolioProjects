@@ -20,6 +20,7 @@ import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import AddProjectForm from '@/components/AddProjectForm.tsx'; // Adjust the path as needed
 import LoginForm from '@/components/LoginForm.tsx';
 import ProjectModal from "@/components/ProjectModal.tsx";
+import EditProjectForm from "@/components/EditProjectForm.tsx";
 import ProtectedRoute from '@/components/ProtectedRoute.tsx';
 import { useAuth } from '@/components/AuthContext';
 
@@ -283,6 +284,14 @@ export default function AdvancedSearchPage() {
                       project={selectedProject}
                     />
                   )}
+                  {user && (
+                    <Link
+                      to={`/edit-project/${project.id}`}
+                      className="text-sm text-blue-600 hover:underline ml-auto"
+                    >
+                      Edit
+                    </Link>
+                  )}
                 </CardContent>
               </Card>
             ))}
@@ -378,6 +387,7 @@ export default function AdvancedSearchPage() {
                 </ProtectedRoute>
               }
             />
+            <Route path="/edit-project/:id" element={<EditProjectForm />} />
           </Routes>
         </div>
       </div>
