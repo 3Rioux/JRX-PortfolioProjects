@@ -12,6 +12,7 @@ export default function EditProjectForm() {
 
   const { id } = useParams();
   const navigate = useNavigate();
+  const [isSaved, setIsSaved] = useState(false);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -90,13 +91,16 @@ export default function EditProjectForm() {
     if (error) {
         console.error(error); // helpful debug
         setError(`Failed to update project: ${error.message} + Project UUID: ${id}`);
-    } 
-    // else {
-    //   navigate('/'); // redirect to homepage or project view
-    // }
+    } else {
+      setIsSaved(true); // Switch to Done button
+      setMessage(`Update Successfull`)
+    }
   };
 
-
+  // return to projects list button but still have time to review and see a success message 
+  const handleDone = () => {
+    navigate('/searchprojects'); // redirect to homepage or project view
+  };
   
   if (loading) return <p className="text-center mt-10">Loading project...</p>;
   if (error) return <p className="text-center mt-10 text-red-500">{error}</p>;
@@ -114,13 +118,12 @@ export default function EditProjectForm() {
       {/* Who is trying to Update the Project */}
       <div className="flex flex-col gap-2 max-w-md mx-auto dark:text-violet-500">
         {user ? (
-          <p className='border-4 border-solid text-center'>Adding Under User - {user.email}</p>
+          <p className='border-2 border-solid text-center'>Adding Under User - {user.email}</p>
         ) : (
           <p>Not logged in</p>
         )}
-      </div>
 
-      <div className="flex flex-col gap-2 max-w-md mx-auto dark:text-violet-500">
+        {/* Who Created the Project */}
         {user ? (
           <p className='border-4 border-solid text-center'>Project Creator - {user.email}</p>
         ) : (
@@ -187,9 +190,22 @@ export default function EditProjectForm() {
             className="p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white mb-4"
         />
 
-        <Button onClick={handleUpdate}>Save Changes</Button>
+        {message && <p className="md:border-1 bg-indigo-200 rounded-xl text-center text-md mt-2 mb-4">{message}</p>}
+
+        {/* <Button onClick={handleUpdate}>Save Changes</Button> */}
+        {isSaved ? (
+          <Button className="bg-green-500 text-lg" onClick={handleDone}>
+            Return Home
+          </Button>
+          ) : (
+            <Button className="bg-sky-500" onClick={handleUpdate}>
+              Save Changes
+            </Button>
+          )}
+
+          
         </div>
-        {message && <p className="text-sm mt-2">{message}</p>}
+        
     </div>
   );
 }

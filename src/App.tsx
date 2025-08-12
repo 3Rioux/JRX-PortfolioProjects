@@ -376,7 +376,7 @@ export default function AdvancedSearchPage() {
         </footer>
         <div>
           <Routes>
-            <Route path="/" element={<AdvancedSearchPage />} />
+            <Route path="/searchprojects" element={<AdvancedSearchPage />} />
             {/* <Route path="/add-project" element={<AddProjectForm />} /> */}
             <Route path="/login" element={<LoginForm />} />
             <Route
