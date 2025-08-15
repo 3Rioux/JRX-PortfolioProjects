@@ -115,6 +115,15 @@ export default function EditProjectForm() {
     // <div className="max-w-3xl mx-auto p-6">
     <div className="bg-muted text-foreground border shadow-sm p-4 rounded-xl max-w-xl mx-auto mt-10">
       
+      {/* Back Button */}
+      <button
+        type="button"
+        onClick={() => navigate('/')}
+        className="mb-4 px-3 py-1 bg-gray-300 hover:bg-gray-400 text-black rounded dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
+      >
+        ← Back
+      </button>
+
       {/* Who is trying to Update the Project */}
       <div className="flex flex-col gap-2 max-w-md mx-auto dark:text-violet-500">
         {user ? (

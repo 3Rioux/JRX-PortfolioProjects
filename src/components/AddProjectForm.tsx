@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import type { User } from '@supabase/supabase-js';
 
@@ -6,6 +7,8 @@ import type { User } from '@supabase/supabase-js';
 
 export default function AddProjectForm() {
   const [user, setUser] = useState<User | null>(null); // 👈 new user state
+
+  const navigate = useNavigate();
 
   const [title, setTitle] = useState('');
   const [members, setMembers] = useState('');
@@ -187,6 +190,15 @@ const handleSubmit = async (e: React.FormEvent) => {
 
   return (
     <div className="bg-muted text-foreground border shadow-sm p-4 rounded-xl max-w-xl mx-auto mt-10">
+      
+      {/* Back Button */}
+      <button
+        type="button"
+        onClick={() => navigate('/')}
+        className="mb-4 px-3 py-1 bg-gray-300 hover:bg-gray-400 text-black rounded dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
+      >
+        ← Back
+      </button>
       
       <div className="flex flex-col gap-2 max-w-md mx-auto dark:text-violet-500">
         {user ? (
