@@ -35,9 +35,9 @@ export default function App() {
           >
             Home
           </a>
-          <a href="searchprojects" className="text-sm hover:underline">
+          <Link to="/searchprojects" className="text-sm hover:underline" >
             Projects
-          </a>
+          </Link>
           <a
             href="https://3rioux.github.io/JustinRioux-JRXDev.github.io/index.html#page2"
             className="text-sm hover:underline"
