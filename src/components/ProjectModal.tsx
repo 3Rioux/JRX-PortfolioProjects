@@ -53,8 +53,8 @@ interface ProjectModalProps {
       <Transition show={isOpen} as={Fragment}>
         <Dialog onClose={onClose} className="fixed inset-0 z-50">
           <div className="fixed inset-0 backdrop-blur-sm" aria-hidden="true" />
-          <div className="fixed inset-0 flex items-center justify-center p-4 overflow-y-auto">
-            <DialogPanel className="w-full max-w-screen-md max-h-screen overflow-y-auto max-w-7xl bg-white rounded-2xl shadow-xl p-4 relative">
+          <div className="fixed inset-0 flex items-center justify-center p-4 overflow-y-auto ">
+            <DialogPanel className="w-full max-w-screen-md max-h-9/10 overflow-y-auto max-w-7xl bg-white rounded-2xl shadow-xl p-4 relative">
               {/* Close Button */}
               <div className="mb-5">
                 <button

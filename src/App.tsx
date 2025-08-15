@@ -65,33 +65,6 @@ export default function AdvancedSearchPage() {
   //Pop-up Model:
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
-  // const projectData = [
-  //   {
-  //     id: 1,
-  //     title: 'Portfolio Website',
-  //     description: 'A clean portfolio site for showcasing projects.',
-  //     tags: ['Web', 'Client Work'],
-  //   },
-  //   {
-  //     id: 2,
-  //     title: 'Mobile App Concept',
-  //     description: 'An idea for a productivity-focused mobile app.',
-  //     tags: ['Mobile', 'Concept'],
-  //   },
-  //   {
-  //     id: 3,
-  //     title: 'Brand Identity',
-  //     description: 'Logo and branding for a local business.',
-  //     tags: ['Branding', 'Freelance'],
-  //   },
-  //   {
-  //     id: 4,
-  //     title: 'Illustration Piece',
-  //     description: 'A detailed digital illustration for a client.',
-  //     tags: ['Illustration', 'Client Work'],
-  //   },
-  // ];
-
   useEffect(() => {
     const fetchProjects = async () => {
       setLoading(true);
@@ -124,14 +97,6 @@ export default function AdvancedSearchPage() {
     );
   };
 
-  //Filter Projects With Just the Tags
-  // const filteredProjects =
-  //   selectedTags.length === 0
-  //     ? projectData
-  //     : projectData.filter((project) =>
-  //         selectedTags.every((tag) => project.tags.includes(tag))
-  //       );
-
   //Filter Projects With Search bar + Tags
   const filteredProjects = useMemo(() => {
     // First fuzzy search with title/tags
@@ -145,32 +110,6 @@ export default function AdvancedSearchPage() {
       selectedTags.every((tag) => project.tags.includes(tag))
     );
   }, [fuse, searchQuery, selectedTags, projectData]);
-
-  // const toggleTheme = () => {
-  //   const root = document.documentElement;
-  //   const isNowDark = !isDark;
-  //   if (isNowDark) {
-  //     root.classList.add('dark');
-  //     localStorage.setItem('theme', 'dark');
-  //   } else {
-  //     root.classList.remove('dark');
-  //     localStorage.setItem('theme', 'light');
-  //   }
-  //   setIsDark(isNowDark);
-  // };
-
-  // //Theme Toggle Button:
-  // useEffect(() => {
-  //   // On load, detect system or saved preference
-  //   const saved = localStorage.getItem('theme');
-  //   const systemPrefersDark = window.matchMedia(
-  //     '(prefers-color-scheme: dark)'
-  //   ).matches;
-  //   if (saved === 'dark' || (!saved && systemPrefersDark)) {
-  //     document.documentElement.classList.add('dark');
-  //     setIsDark(true);
-  //   }
-  // }, []);
 
   return (
     <div className="bg-background text-foreground">
@@ -302,43 +241,7 @@ rel="noopener noreferrer"
             )}
           </div>
         )}
-        {/* <div className="p-4">
-          <h2 className="text-xl font-bold mb-4">Advanced Search</h2>
-
-          {loading ? (
-            <p>Loading projects...</p>
-          ) : (
-            <ul className="grid gap-4">
-              {projectData
-                .filter((project) =>
-                  project.title
-                    .toLowerCase()
-                    .includes(searchQuery.toLowerCase())
-                )
-                .filter((project) =>
-                  selectedTags.length === 0
-                    ? true
-                    : selectedTags.every((tag) => project.tags.includes(tag))
-                )
-                .map((project) => (
-                  <li key={project.id} className="border p-4 rounded shadow">
-                    <h3 className="text-lg font-semibold">{project.title}</h3>
-                    <p>{project.description}</p>
-                    <div className="flex gap-2 mt-2">
-                      {project.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="text-xs bg-gray-200 px-2 py-1 rounded"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </li>
-                ))}
-            </ul>
-          )}
-        </div> */}
+       
       {/* Footer */}
       <footer className="mt-16 border-t pt-6 text-sm text-gray-500 flex flex-col md:flex-row justify-between items-center">
         <p>© 2025 MyPortfolio</p>

@@ -8,7 +8,7 @@ import App from './App.tsx'
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <AuthProvider>
-      <BrowserRouter  basename="/JRX-PortfolioProjects">
+      <BrowserRouter basename="/JRX-PortfolioProjects">
       <App />
       </BrowserRouter>
     </AuthProvider>
