@@ -39,7 +39,7 @@ type Project = {
 
 
 export default function AdvancedSearchPage() {
-  //Login:
+//Login:
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -175,48 +175,48 @@ export default function AdvancedSearchPage() {
   return (
     <div className="bg-background text-foreground">
       <div className="min-h-screen  p-4 md:p-10 text-gray-900">
-        {/* Navbar */}
-        <header className="header-projects flex justify-between items-center mb-6 sticky top-0 z-10 shadow-sm p-4 rounded-xl backdrop-blur-sm">
-          <h1 className="text-xl dark:text-white">
-            Justin Rioux's{' '}
+      {/* Navbar */}
+      <header className="header-projects flex justify-between items-center mb-6 sticky top-0 z-10 shadow-sm p-4 rounded-xl backdrop-blur-sm">
+        <h1 className="text-xl dark:text-white">
+          Justin Rioux's{' '}
             <span className="font-bold text-primary">Projects</span>
-          </h1>
-          <nav className="space-x-4 hidden md:block">
-            <a
-              href="https://3rioux.github.io/JustinRioux-JRXDev.github.io/index.html#page1"
-              rel="noopener noreferrer"
-              className="text-sm hover:underline"
-            >
-              Home
-            </a>
-            <a href="https://jrxportfolioprojects-0y4z--5173--96435430.local-credentialless.webcontainer.io/JRX-PortfolioProjects/" className="text-sm hover:underline">
-              Projects
-            </a>
-            <a
-              href="https://3rioux.github.io/JustinRioux-JRXDev.github.io/index.html#page2"
-              rel="noopener noreferrer"
-              className="text-sm hover:underline"
-            >
-              About
-            </a>
+        </h1>
+        <nav className="space-x-4 hidden md:block">
+          <a
+            href="https://3rioux.github.io/JustinRioux-JRXDev.github.io/index.html#page1"
+rel="noopener noreferrer"
+            className="text-sm hover:underline"
+          >
+            Home
+          </a>
+          <a href="https://jrxportfolioprojects-0y4z--5173--96435430.local-credentialless.webcontainer.io/JRX-PortfolioProjects/" className="text-sm hover:underline">
+            Projects
+          </a>
+          <a
+            href="https://3rioux.github.io/JustinRioux-JRXDev.github.io/index.html#page2"
+rel="noopener noreferrer"
+            className="text-sm hover:underline"
+          >
+            About
+          </a>
 
             {/* <a href="#" className="text-sm hover:underline">
               Contact
             </a> */}
-          </nav>
-          {/* <Button variant="outline">☀️</Button> */}
+        </nav>
+{/* <Button variant="outline">☀️</Button> */}
           {/* <div>
             <Button onClick={toggleTheme} variant="outline">
               {isDark ? '☀️ Light' : '🌙 Dark'}
             </Button>
           </div> */}{' '}
-          <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-            <ModeToggle />
-          </ThemeProvider>
-        </header>
+        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+          <ModeToggle />
+        </ThemeProvider>
+      </header>
 
-        {/* Search Bar */}
-        <div className="mb-4">
+      {/* Search Bar */}
+      <div className="mb-4">
           <Input
             placeholder="Search projects by name or tag..."
             className="rounded-full px-4 py-2 dark:text-white"
@@ -339,42 +339,42 @@ export default function AdvancedSearchPage() {
             </ul>
           )}
         </div> */}
-        {/* Footer */}
-        <footer className="mt-16 border-t pt-6 text-sm text-gray-500 flex flex-col md:flex-row justify-between items-center">
-          <p>© 2025 MyPortfolio</p>
-          <div className="flex gap-4 mt-2 md:mt-0">
-            <a href="#">LinkedIn</a>
-            <a href="#">GitHub</a>
-            {/* <a href="#">Twitter</a> */}
-            {user && (
-              <Link
+      {/* Footer */}
+      <footer className="mt-16 border-t pt-6 text-sm text-gray-500 flex flex-col md:flex-row justify-between items-center">
+        <p>© 2025 MyPortfolio</p>
+        <div className="flex gap-4 mt-2 md:mt-0">
+          <a href="#">LinkedIn</a>
+          <a href="#">GitHub</a>
+{/* <a href="#">Twitter</a> */}
+          {user && (
+            <Link
                 to="/add-project"
                 // className="text-sm bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
                 className={'cursor-pointer select-none text-md'}
               >
-                Add New Project
-              </Link>
-            )}
-            {!user ? (
-              <Link
+              Add New Project
+            </Link>
+          )}
+          {!user ? (
+            <Link
                 to="/login"
                 // className="text-sm bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
                 className={clsx('cursor-pointer select-none text-md')}
               >
-                Login
-              </Link>
-            ) : (
-              <button
-                onClick={handleLogout}
-                className={clsx('cursor-pointer select-none text-md text-red-600')}
-              >
-                Logout
-              </button>
-            )}
-          </div>
+              Login
+            </Link>
+          ) : (
+            <button
+              onClick={handleLogout}
+              className={clsx('cursor-pointer select-none text-md text-red-600')}
+            >
+              Logout
+            </button>
+          )}
+        </div>
 
-        </footer>
-        <div>
+      </footer>
+<div>
           <Routes>
             <Route path="/searchprojects" element={<AdvancedSearchPage />} />
             {/* <Route path="/add-project" element={<AddProjectForm />} /> */}
