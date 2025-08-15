@@ -48,9 +48,19 @@ export default function AdvancedSearchPage() {
     navigate('/login'); // Optional: redirect to login after logout
   };
 
-  const genres = ['Web', 'Mobile', 'Branding', 'Illustration'];
+  const genres = ['Web', 'Test', 'Mobile', 'Branding', 'Illustration'];
   const types = ['Client Work', 'Case Study', 'Concept', 'Freelance'];
-  const allTags = [...genres, ...types];
+
+  const [allTags, setAllTags] = useState<string[]>([]);
+
+  // const allTags = [...genres, ...types];
+
+  // Set default tags incase cant access database? but if i cant access i cant search anyway right?
+  const defaultTags = Array.from(
+    new Set([...genres, ...types])
+  );
+  // setAllTags(defaultTags);
+
 
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
@@ -67,6 +77,9 @@ export default function AdvancedSearchPage() {
 
   useEffect(() => {
     const fetchProjects = async () => {
+
+      setAllTags(defaultTags);
+
       setLoading(true);
       const { data, error } = await supabase.from('projects').select('*');
       if (error) {
@@ -75,7 +88,20 @@ export default function AdvancedSearchPage() {
         console.debug('successfully fetching projects:');
         setProjectData(data as Project[]);
         console.log('Project data fetched:', data); // Add this line
-      }
+
+        // Extract all tags from the database
+        const dbTags = data
+        .flatMap((project) => project.tags || []) // Flatten tags arrays
+        .filter(Boolean); // Remove null/undefined
+
+        // Merge with genres & types, remove duplicates
+        const uniqueTags = Array.from(
+          new Set([...genres, ...types, ...dbTags])
+        );
+
+        setAllTags(uniqueTags);
+      }//end if else 
+      
       setLoading(false);
     };
 
