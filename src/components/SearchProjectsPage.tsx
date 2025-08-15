@@ -1,4 +1,4 @@
-
+'use client';
 import { useEffect, useMemo, useState } from 'react';
 import Fuse from 'fuse.js';
 import { Input } from '@/components/ui/input';
@@ -24,7 +24,7 @@ type Project = {
     software: { name: string; icon: string }[];
   };
 
-export default function SearchProjectsPage() {
+export function SearchProjectsPage() {
 
   const { user } = useAuth();
   const genres = ['Web', 'Mobile', 'Branding', 'Illustration'];

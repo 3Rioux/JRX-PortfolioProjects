@@ -7,7 +7,7 @@ import clsx from 'clsx';
 import AddProjectForm from '@/components/AddProjectForm';
 import LoginForm from '@/components/LoginForm';
 import EditProjectForm from '@/components/EditProjectForm';
-import SearchProjectsPage from '@/components/SearchProjectsPage';
+import { SearchProjectsPage } from '@/components/SearchProjectsPage.tsx';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { useAuth } from '@/components/AuthContext';
 import { supabase } from '@/lib/supabaseClient';
@@ -35,7 +35,7 @@ export default function App() {
           >
             Home
           </a>
-          <a href="/JRX-PortfolioProjects/searchprojects" className="text-sm hover:underline">
+          <a href="searchprojects" className="text-sm hover:underline">
             Projects
           </a>
           <a
@@ -53,9 +53,9 @@ export default function App() {
       {/* Routes */}
       <Routes>
         {/* Redirect / to /searchprojects */}
-        <Route path="/" element={<Navigate to="/JRX-PortfolioProjects/searchprojects" replace />} />
+        <Route path="/" element={<Navigate to="/searchprojects" replace />} />
 
-        <Route path="/JRX-PortfolioProjects/searchprojects" element={<SearchProjectsPage />} />
+        <Route path="/searchprojects" element={<SearchProjectsPage />} />
         <Route path="/login" element={<LoginForm />} />
         <Route
           path="/add-project"
