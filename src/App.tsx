@@ -99,6 +99,7 @@ export default function AdvancedSearchPage() {
           new Set([...genres, ...types, ...dbTags])
         );
 
+        //Set tags to the unique tags found in the database 
         setAllTags(uniqueTags);
       }//end if else 
       
