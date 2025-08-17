@@ -144,13 +144,14 @@ export default function AdvancedSearchPage() {
       {/* Navbar */}
       <header className="header-projects flex justify-between items-center mb-6 sticky top-0 z-10 shadow-sm p-4 rounded-xl backdrop-blur-sm">
         <h1 className="text-xl dark:text-white">
-          Justin Rioux's{' '}
-            <span className="font-bold text-primary">Projects</span>
+          <Link className='' to='/'>Home Icon</Link>
+          <span className="hidden sm:inline">Justin Rioux's{' '}</span>
+          <span className="font-bold text-primary ">Projects</span>
         </h1>
         <nav className="space-x-4 hidden md:block">
           <a
             href="https://3rioux.github.io/JustinRioux-JRXDev.github.io/index.html#page1"
-rel="noopener noreferrer"
+            rel="noopener noreferrer"
             className="text-sm hover:underline"
           >
             Home
@@ -160,7 +161,7 @@ rel="noopener noreferrer"
           </a>
           <a
             href="https://3rioux.github.io/JustinRioux-JRXDev.github.io/index.html#page2"
-rel="noopener noreferrer"
+            rel="noopener noreferrer"
             className="text-sm hover:underline"
           >
             About
