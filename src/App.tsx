@@ -142,32 +142,45 @@ export default function AdvancedSearchPage() {
     <div className="bg-background text-foreground">
       <div className="min-h-screen  p-4 md:p-10 text-gray-900">
       {/* Navbar */}
-      <header className="header-projects flex justify-between items-center mb-6 sticky top-0 z-10 shadow-sm p-4 rounded-xl backdrop-blur-sm">
+      <header className="header-projects min-w- flex justify-between items-center mb-6 sticky top-0 z-10 shadow-sm p-4 rounded-xl backdrop-blur-sm">
+        
+        
         <h1 className="text-xl dark:text-white">
-          <Link className='' to='/'>Home Icon</Link>
-          <span className="hidden sm:inline">Justin Rioux's{' '}</span>
-          <span className="font-bold text-primary ">Projects</span>
+          <div className="flex items-center gap-2">
+            <a className="h-12 w-12 "  href="https://3rioux.github.io/JustinRioux-JRXDev.github.io/index.html#page1">
+                <img className='flex-shrink-0'  alt="Logo" src="src/assets/Default_Logo_1024x1024.jpg"></img>  
+            </a>
+            {/* <span className="hidden sm:inline">Justin Rioux's{' '}</span> */}
+            {/* <span className="font-bold text-primary">Projects Page</span> */}
+            {/* NOT Perfect but close enaugh for now  */}
+            <span className="text-primary font-bold text-sm xxs:text-xl xs:text-3xl sm:text-2xl md:text-3xl max-[360px]:hidden">Projects Page</span>
+            {/* <span className=" text-primary font-bold text-[clamp(0.2rem, 1.5vw, 1.25rem)]">
+              Projects Page
+            </span> */}
+          </div>
         </h1>
         <nav className="space-x-4 hidden md:block">
           <a
             href="https://3rioux.github.io/JustinRioux-JRXDev.github.io/index.html#page1"
             rel="noopener noreferrer"
-            className="text-sm hover:underline"
+            className="text-lg md:text-xl hover:underline"
           >
             Home
           </a>
-          <a href="https://jrxportfolioprojects-0y4z--5173--96435430.local-credentialless.webcontainer.io/JRX-PortfolioProjects/" className="text-sm hover:underline">
+          <a 
+            href="https://jrxportfolioprojects-0y4z--5173--96435430.local-credentialless.webcontainer.io/JRX-PortfolioProjects/" 
+            className="text-lg md:text-xl hover:underline">
             Projects
           </a>
           <a
             href="https://3rioux.github.io/JustinRioux-JRXDev.github.io/index.html#page2"
             rel="noopener noreferrer"
-            className="text-sm hover:underline"
+            className="text-lg md:text-xl hover:underline"
           >
             About
           </a>
 
-            {/* <a href="#" className="text-sm hover:underline">
+            {/* <a href="#" className="text-lg md:text-xl hover:underline">
               Contact
             </a> */}
         </nav>
