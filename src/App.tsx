@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import Fuse from 'fuse.js';
 
 import { Input } from '@/components/ui/input';
@@ -9,6 +9,8 @@ import { Badge } from '@/components/ui/badge';
 
 import { ThemeProvider } from '@/components/theme-provider';
 import { ModeToggle } from '@/components/mode-toggle';
+
+import { Menu, X } from "lucide-react"; // icon library (shadcn/lucide)
 
 import clsx from 'clsx';
 
@@ -138,13 +140,41 @@ export default function AdvancedSearchPage() {
     );
   }, [fuse, searchQuery, selectedTags, projectData]);
 
+  // === Menu ===
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null); //for clicking off the menu
+
+  // Close menu if clicked outside
+  useEffect(() => {
+    function handleOutside(event: MouseEvent | TouchEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    }
+
+    if (isMenuOpen) {
+      document.addEventListener("mousedown", handleOutside);
+      document.addEventListener("touchstart", handleOutside);
+    } else {
+      document.removeEventListener("mousedown", handleOutside);
+      document.removeEventListener("touchstart", handleOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutside);
+      document.removeEventListener("touchstart", handleOutside);
+    };
+  }, [isMenuOpen]);
+
   return (
     <div className="bg-background text-foreground">
       <div className="min-h-screen  p-4 md:p-10 text-gray-900">
-      {/* Navbar */}
+      {/*  Content CLick Capture */}
+      <div className="click-capture"></div>
+
+
+      {/* Logo + Title */}
       <header className="header-projects min-w- flex justify-between items-center mb-6 sticky top-0 z-10 shadow-sm p-4 rounded-xl backdrop-blur-sm">
-        
-        
         <h1 className="text-xl dark:text-white">
           <div className="flex items-center gap-2">
             <a className="h-12 w-12 "  href="https://3rioux.github.io/JustinRioux-JRXDev.github.io/index.html#page1">
@@ -159,6 +189,8 @@ export default function AdvancedSearchPage() {
             </span> */}
           </div>
         </h1>
+
+        {/* Desktop Nav */}
         <nav className="space-x-4 hidden md:block">
           <a
             href="https://3rioux.github.io/JustinRioux-JRXDev.github.io/index.html#page1"
@@ -184,15 +216,112 @@ export default function AdvancedSearchPage() {
               Contact
             </a> */}
         </nav>
-{/* <Button variant="outline">☀️</Button> */}
+        {/* <Button variant="outline">☀️</Button> */}
           {/* <div>
             <Button onClick={toggleTheme} variant="outline">
               {isDark ? '☀️ Light' : '🌙 Dark'}
             </Button>
           </div> */}{' '}
+        {/* <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+          <ModeToggle />
+        </ThemeProvider> */}
+
+      {/* !!!Hate that i have to double create this because of the click off menu breaks the close button !!!*/}
+      <div className="flex items-center gap-2 hidden md:block">
         <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
           <ModeToggle />
         </ThemeProvider>
+      </div>
+      
+
+      <div ref={menuRef} className="relative md:hidden">
+        {/* Theme + Mobile Toggle */}
+        <div className="flex items-center gap-2">
+          <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+            <ModeToggle />
+          </ThemeProvider>
+
+              {/* Mobile Menu Toggle */}
+              <button
+                
+                className="md:hidden p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+              >
+                {isMenuOpen ? <X className="h-6 w-6" color="#fff" strokeWidth={2} /> : <Menu className="h-6 w-6" color="#fff" strokeWidth={2} />}
+              </button>
+        </div>
+
+        {/* Mobile Dropdown Menu with Slide Animation */}
+        <div
+          className={clsx(
+            "absolute top-full right-4 mt-2 w-40 bg-white dark:bg-gray-900 rounded-xl shadow-lg p-4 flex flex-col space-y-2 md:hidden transform transition-all duration-300 origin-top",
+            isMenuOpen
+              ? "scale-y-100 opacity-100 max-h-96 p-4"
+              : "scale-y-0 opacity-0 max-h-0 p-0"
+          )}
+        >
+          <a
+            href="https://3rioux.github.io/JustinRioux-JRXDev.github.io/index.html#page1"
+            className="text-lg hover:underline"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Home
+          </a>
+          <a
+            href="https://jrxportfolioprojects-0y4z--5173--96435430.local-credentialless.webcontainer.io/JRX-PortfolioProjects/"
+            className="text-lg hover:underline"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Projects
+          </a>
+          <a
+            href="https://3rioux.github.io/JustinRioux-JRXDev.github.io/index.html#page2"
+            className="text-lg hover:underline"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            About
+          </a>
+        </div>
+      </div>
+
+      {/* Mobile Dropdown Menu */}
+      {/* {isMenuOpen && (
+        //OG
+        //  className="absolute top-full right-4 mt-2 w-40 bg-white dark:bg-gray-900 rounded-xl shadow-lg p-4 flex flex-col space-y-2 md:hidden">
+        
+        <div
+            ref={menuRef}
+            className={clsx(
+              "absolute top-full right-4 mt-2 w-40 bg-white dark:bg-gray-900 rounded-xl shadow-lg p-4 flex flex-col space-y-2 md:hidden transform transition-all duration-1000 origin-top",
+              isMenuOpen
+                ? "scale-y-100 opacity-100 max-h-96 p-4"
+                : "scale-y-0 opacity-0 max-h-0 p-0"
+            )}
+         
+        >
+          <a
+            href="https://3rioux.github.io/JustinRioux-JRXDev.github.io/index.html#page1"
+            className="text-lg hover:underline"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Home
+          </a>
+          <a
+            href="/"
+            className="text-lg hover:underline"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Projects
+          </a>
+          <a
+            href="https://3rioux.github.io/JustinRioux-JRXDev.github.io/index.html#page2"
+            className="text-lg hover:underline"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            About
+          </a>
+        </div>
+      )} */}
       </header>
 
       {/* Search Bar */}
