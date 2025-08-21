@@ -50,8 +50,9 @@ export default function AdvancedSearchPage() {
     navigate('/login'); // Optional: redirect to login after logout
   };
 
-  const genres = ['Web', 'Test', 'Mobile', 'Branding', 'Illustration'];
-  const types = ['Client Work', 'Case Study', 'Concept', 'Freelance'];
+  const genres = ['Web', 'Mobile', 'Game Dev'];
+  //const types = ['Client Work', 'Case Study', 'Concept', 'Freelance'];
+  const types = ['Consept'];
 
   const [allTags, setAllTags] = useState<string[]>([]);
 
@@ -100,6 +101,9 @@ export default function AdvancedSearchPage() {
         const uniqueTags = Array.from(
           new Set([...genres, ...types, ...dbTags])
         );
+
+        // Sort alphabetically
+        uniqueTags.sort((a, b) => a.localeCompare(b));
 
         //Set tags to the unique tags found in the database 
         setAllTags(uniqueTags);
