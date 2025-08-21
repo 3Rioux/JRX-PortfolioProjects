@@ -46,6 +46,7 @@ export default function AddProjectForm() {
 
   const [githubLink, setGithubLink] = useState('');
   const [itchLink, setItchLink] = useState('');
+  const [extraLink, setExtraLink] = useState('');
   // const [imageFile, setImageFile] = useState<File | null>(null);
   // const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
@@ -166,6 +167,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       software: softwareList,
       github_link: githubLink,
       itch_link: itchLink,
+      extra_link: extraLink,
       // Optionally store more images in a separate table
     },
   ]);
@@ -181,6 +183,7 @@ const handleSubmit = async (e: React.FormEvent) => {
     setContribution('');
     setGithubLink('');
     setItchLink('');
+    setExtraLink('');
     setImageFiles([]);
     setPreviewUrls([]);
   }
@@ -334,6 +337,13 @@ const handleSubmit = async (e: React.FormEvent) => {
           placeholder="Project Itch.io Link"
           value={itchLink}
           onChange={(e) => setItchLink(e.target.value)}
+          className="p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white"
+        />
+        <input
+          type="url"
+          placeholder="Project External Link (Like link to the page)"
+          value={extraLink}
+          onChange={(e) => setExtraLink(e.target.value)}
           className="p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white"
         />
 

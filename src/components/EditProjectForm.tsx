@@ -99,7 +99,8 @@ export default function EditProjectForm() {
 
   // return to projects list button but still have time to review and see a success message 
   const handleDone = () => {
-    navigate('/searchprojects'); // redirect to homepage or project view
+    //navigate('/searchprojects');
+    navigate('/'); // redirect to homepage or project view
   };
   
   if (loading) return <p className="text-center mt-10">Loading project...</p>;
