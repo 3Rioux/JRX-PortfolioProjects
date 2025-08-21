@@ -23,6 +23,7 @@ export default function EditProjectForm() {
   const [imageUrls, setImageUrls] = useState<string>('');
   const [github_link, setGithub] = useState('');
   const [itch_link, setItch] = useState('');
+  const [extra_link, setExtraLink] = useState('');
   const [software, setSoftware] = useState<string>(''); // store as JSON string or comma-separated
 
   // Fetch the user on mount
@@ -61,6 +62,7 @@ export default function EditProjectForm() {
       setImageUrls(data.image_url?.join(', ') || '');
       setGithub(data.github_link || '');
       setItch(data.itch_link || '');
+      setExtraLink(data.extra_link || '');
       setSoftware(
         data.software ? data.software.map((s: any) => s.name).join(', ') : ''
       );
@@ -84,6 +86,7 @@ export default function EditProjectForm() {
         image_url: imageUrls.split(',').map((url) => url.trim()),
         github_link,
         itch_link,
+        extra_link,
         software: software.split(',').map((name) => ({ name: name.trim() })),
       })
       .eq('id', id);
@@ -188,6 +191,14 @@ export default function EditProjectForm() {
         <Input
             placeholder="Itch.io URL"
             value={itch_link}
+            onChange={(e) => setItch(e.target.value)}
+            className="p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white mb-4"
+        />
+
+        <label className="block font-medium text-sm dark:text-white">Extra URL:</label>
+        <Input
+            placeholder="Extra Link URL"
+            value={extra_link}
             onChange={(e) => setItch(e.target.value)}
             className="p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white mb-4"
         />

@@ -164,6 +164,11 @@ interface ProjectModalProps {
                     <SquareArrowOutUpRight /> <FontAwesomeIcon icon={faItchIo} className="w-4 h-4"  /> Itch.io
                     </a>
                   )}
+                  {project.extra_link && (
+                    <a href={project.extra_link} target="_blank" rel="noopener noreferrer" className="flex items-center p-1 gap-1 text-blue-600 hover:underline bg-cyan-100 rounded" style={{ cursor: 'pointer' }}>
+                      <SquareArrowOutUpRight /> Extra Link
+                    </a>
+                  )}
                 </div> 
             </DialogPanel>
           </div>
