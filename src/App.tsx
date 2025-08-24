@@ -1,4 +1,5 @@
 'use client';
+import jrxLogoImage from './assets/Default_Logo_1024x1024.jpg';
 import { useEffect, useMemo, useState, useRef } from 'react';
 import Fuse from 'fuse.js';
 
@@ -176,13 +177,13 @@ export default function AdvancedSearchPage() {
       {/*  Content CLick Capture */}
       <div className="click-capture"></div>
 
-
+      
       {/* Logo + Title */}
       <header className="header-projects min-w- flex justify-between items-center mb-6 sticky top-0 z-10 shadow-sm p-4 rounded-xl backdrop-blur-sm">
         <h1 className="text-xl dark:text-white">
           <div className="flex items-center gap-2">
             <a className="h-12 w-12 "  href="https://3rioux.github.io/JustinRioux-JRXDev.github.io/index.html#page1">
-                <img className='flex-shrink-0'  alt="Logo" src="src/assets/Default_Logo_1024x1024.jpg"></img>  
+                <img className='flex-shrink-0'  alt="Logo" src={jrxLogoImage}></img>  
             </a>
             {/* <span className="hidden sm:inline">Justin Rioux's{' '}</span> */}
             {/* <span className="font-bold text-primary">Projects Page</span> */}
