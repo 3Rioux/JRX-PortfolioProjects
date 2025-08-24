@@ -39,15 +39,22 @@ interface ProjectModalProps {
   }
 
 
-  export default function ProjectModal({ isOpen, onClose, project }: ProjectModalProps) {
+export default function ProjectModal({ isOpen, onClose, project }: ProjectModalProps) {
+    
     const images: string[] = Array.isArray(project.image_url) ? project.image_url : [project.image_url];
-  
+    //Big size image 
+    const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
     // Image Carousel:
     const [current, setCurrent] = useState(0);
 
-    const next = () => setCurrent((c) => Math.min(c + 1, images.length - 1));
-    const prev = () => setCurrent((c) => Math.max(c - 1, 0));
+    //Stop at last image
+    // const next = () => setCurrent((c) => Math.min(c + 1, images.length - 1));
+    // const prev = () => setCurrent((c) => Math.max(c - 1, 0));
+
+    //Full loop back to start image:
+    const next = () => setCurrent((c) => (c + 1) % images.length);
+    const prev = () => setCurrent((c) => (c - 1 + images.length) % images.length);
 
     return (
       <Transition show={isOpen} as={Fragment}>
@@ -79,31 +86,94 @@ interface ProjectModalProps {
                   </div>
                 )}
               </div> */}
-                  <div className="relative w-full aspect-video overflow-hidden rounded-xl mb-4">
+
+              {/* Main Carousel */}
+              <div className="relative w-full aspect-video overflow-hidden rounded-xl mb-4">
+                    {/* Main Image */}
                     <img
                       src={images[current]}
                       alt={`Screenshot ${current + 1}`}
                       className="w-full h-full object-cover rounded-xl transition-opacity duration-300"
+                      onClick={() => setIsLightboxOpen(true)} // open lightbox on click
                     />
 
+                    {/* Prev */}
                     <button
                       onClick={prev}
-                      disabled={current === 0}
+                      // disabled={current === 0}
                       className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white text-black rounded-full p-2 disabled:opacity-50"
                       aria-label="Previous image"
                     >
                       ❮
                     </button>
 
+                    {/* Next */}
                     <button
                       onClick={next}
-                      disabled={current === images.length - 1}
+                      // disabled={current === images.length - 1}
                       className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white text-black rounded-full p-2 disabled:opacity-50"
                       aria-label="Next image"
                     >
                       ❯
                     </button>
-                  </div>
+              </div>
+
+              {/* Thumbnail Previews */}
+              <div className="flex gap-2 overflow-x-auto pb-2">
+                {images.map((img, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCurrent(i)}
+                    className={`flex-shrink-0 border-2 rounded-lg overflow-hidden ${
+                      current === i ? "border-primary" : "border-transparent"
+                    }`}
+                  >
+                    <img
+                      src={img}
+                      alt={`Thumbnail ${i + 1}`}
+                      className="w-20 h-14 object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+
+              {/* Lightbox Modal */}
+              {isLightboxOpen && (
+                <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center">
+                  {/* Close Button */}
+                  <button
+                    onClick={() => setIsLightboxOpen(false)}
+                    className="absolute top-4 right-4 text-white text-3xl"
+                  >
+                    <X className="w-8 h-8" />
+                  </button>
+
+                  {/* Large Image */}
+                  <img
+                    src={images[current]}
+                    alt={`Screenshot ${current + 1}`}
+                    className="max-h-[90vh] max-w-[90vw] object-contain rounded-xl"
+                  />
+
+                  {/* Prev */}
+                  <button
+                    onClick={prev}
+                    className="absolute left-6 top-1/2 -translate-y-1/2 bg-white/30 hover:bg-white/60 text-black rounded-full p-3"
+                    aria-label="Previous image"
+                  >
+                    ❮
+                  </button>
+
+                  {/* Next */}
+                  <button
+                    onClick={next}
+                    className="absolute right-6 top-1/2 -translate-y-1/2 bg-white/30 hover:bg-white/60 text-black rounded-full p-3"
+                    aria-label="Next image"
+                  >
+                    ❯
+                  </button>
+                </div>
+              )}
   
               {/* Content */}
               <div className="flex flex-wrap gap-2 mb-4">

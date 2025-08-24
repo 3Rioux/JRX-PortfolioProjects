@@ -50,7 +50,7 @@ export default function AdvancedSearchPage() {
     navigate('/login'); // Optional: redirect to login after logout
   };
 
-  const genres = ['Web', 'Mobile', 'Game Dev'];
+  const genres = ['Website', 'Mobile', 'Game Dev'];
   //const types = ['Client Work', 'Case Study', 'Concept', 'Freelance'];
   const types = ['Consept'];
 
