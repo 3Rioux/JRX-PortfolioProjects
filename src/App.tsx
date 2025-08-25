@@ -27,6 +27,26 @@ import EditProjectForm from "@/components/EditProjectForm.tsx";
 import ProtectedRoute from '@/components/ProtectedRoute.tsx';
 import { useAuth } from '@/components/AuthContext';
 
+type TagRow = {
+  id: string; // uuid
+  name: string;
+  category: string;
+};
+
+type ProjectFromDB = {
+  id: string | number;
+  title: string;
+  members: number;
+  image_url?: string[];
+  description?: string;
+  contribution?: string;
+  github_link?: string;
+  itch_link?: string;
+  software?: { name: string; icon: string }[]; // raw
+  // The relationship that Supabase returns:
+  project_tags?: Array<{ tags: TagRow }>;
+};
+
 type Project = {
   id: number;
   title: string;
@@ -55,7 +75,9 @@ export default function AdvancedSearchPage() {
   //const types = ['Client Work', 'Case Study', 'Concept', 'Freelance'];
   const types = ['Consept'];
 
-  const [allTags, setAllTags] = useState<string[]>([]);
+  const [allTags, setAllTags] = useState<TagRow[]>([]);
+
+  //const [allTags, setAllTags] = useState<string[]>([]);// <---
 
   // const allTags = [...genres, ...types];
 
@@ -79,42 +101,105 @@ export default function AdvancedSearchPage() {
   //Pop-up Model:
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
+
+  // fetch tags and projects
   useEffect(() => {
-    const fetchProjects = async () => {
-
-      setAllTags(defaultTags);
-
+    const fetchAll = async () => {
       setLoading(true);
-      const { data, error } = await supabase.from('projects').select('*');
-      if (error) {
-        console.error('Error fetching projects:', error.message);
-      } else {
-        console.debug('successfully fetching projects:');
-        setProjectData(data as Project[]);
-        console.log('Project data fetched:', data); // Add this line
 
-        // Extract all tags from the database
-        const dbTags = data
-        .flatMap((project) => project.tags || []) // Flatten tags arrays
-        .filter(Boolean); // Remove null/undefined
+      // 1) Fetch tags for the facet/autocomplete UI (tag table)
+      const { data: tagsData, error: tagsError } = await supabase
+        .from<any, TagRow>('tags')
+        .select('id, name, category')
+        .order('name', { ascending: true });
 
-        // Merge with genres & types, remove duplicates
-        const uniqueTags = Array.from(
-          new Set([...genres, ...types, ...dbTags])
-        );
+      if (tagsError) {
+        console.error('Error fetching tags:', tagsError);
+      } else if (tagsData) {
+        setAllTags(tagsData);
+      }
 
-        // Sort alphabetically
-        uniqueTags.sort((a, b) => a.localeCompare(b));
+      // 2) Fetch projects together with their tags using the relationship
+      //    This relies on the foreign key relationship: project_tags -> tags
+      //    Select syntax: select('*, project_tags ( tags ( id, name, category ) )')
+      const { data: projectsRaw, error: projectsError } = await supabase
+        .from<any, ProjectFromDB>('projectsV2')
+        .select('*, project_tags ( tags ( id, name, category ) ), software')
+        .order('title', { ascending: true });
 
-        //Set tags to the unique tags found in the database 
-        setAllTags(uniqueTags);
-      }//end if else 
-      
+      if (projectsError) {
+        console.error('Error fetching projects:', projectsError);
+        setProjectData([]);
+      } else if (projectsRaw) {
+        // Map DB rows into the frontend Project shape (flatten tags)
+        const mapped: Project[] = projectsRaw.map((p) => ({
+          id: p.id,
+          title: p.title,
+          members: (p as any).members ?? 0,
+          image_url: (p as any).image_url ?? [],
+          tags: (p.project_tags || []).map((pt: { tags: { name: any; }; }) => pt.tags.name),
+          description: p.description ?? '',
+          contribution: p.contribution,
+          github_link: p.github_link,
+          itch_link: p.itch_link,
+          software: p.software ?? [],
+        }));
+
+        setProjectData(mapped);
+
+        // If tags table was empty, build all-tags list from projects (fallback)
+        if (!tagsData || tagsData.length === 0) {
+          const dbTags = mapped.flatMap((pr) => pr.tags);
+          const unique = Array.from(new Set(dbTags)).sort((a, b) =>
+            a.localeCompare(b)
+          );
+          setAllTags(unique.map((n) => ({ id: n, name: n } as TagRow)));
+        }
+      }
+
       setLoading(false);
     };
 
-    fetchProjects();
+    fetchAll();
   }, []);
+
+  // useEffect(() => {
+  //   const fetchProjects = async () => {
+
+  //     setAllTags(defaultTags);
+
+  //     setLoading(true);
+  //     const { data, error } = await supabase.from('projects').select('*');
+  //     if (error) {
+  //       console.error('Error fetching projects:', error.message);
+  //     } else {
+  //       console.debug('successfully fetching projects:');
+  //       setProjectData(data as Project[]);
+  //       console.log('Project data fetched:', data);
+
+  //       // Extract all tags from the database
+  //       const dbTags = data
+  //       .flatMap((project) => project.tags || []) // Flatten tags arrays
+  //       .filter(Boolean); // Remove null/undefined
+
+  //       // Merge with genres & types, remove duplicates
+  //       const uniqueTags = Array.from(
+  //         new Set([...genres, ...types, ...dbTags])
+  //       );
+
+  //       // Sort alphabetically
+  //       uniqueTags.sort((a, b) => a.localeCompare(b));
+  //       console.log('Project data fetched:', uniqueTags);
+
+  //       //Set tags to the unique tags found in the database 
+  //       setAllTags(uniqueTags);
+  //     }//end if else 
+      
+  //     setLoading(false);
+  //   };
+
+  //   fetchProjects();
+  // }, []);
 
   const fuse = useMemo(
     () =>
@@ -125,25 +210,46 @@ export default function AdvancedSearchPage() {
     [projectData]
   );
 
-  const handleTagClick = (tag: string) => {
+  // const handleTagClick = (tag: string) => {
+  //   setSelectedTags((prev) =>
+  //     prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+  //   );
+  // };
+
+  const handleTagClick = (tagName: string) => {
     setSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+      prev.includes(tagName) ? prev.filter((t) => t !== tagName) : [...prev, tagName]
     );
   };
 
   //Filter Projects With Search bar + Tags
+  // const filteredProjects = useMemo(() => {
+  //   // First fuzzy search with title/tags
+  //   const searchResults =
+  //     searchQuery.trim() === ''
+  //       ? projectData
+  //       : fuse.search(searchQuery).map((result) => result.item);
+
+  //   // Then filter based on selectedTags
+  //   return searchResults.filter((project) =>
+  //     selectedTags.every((tag) => project.tags.includes(tag))
+  //   );
+  // }, [fuse, searchQuery, selectedTags, projectData]);
+
+  // Filter projects: fuzzy search first, then tag filtering (AND semantics)
   const filteredProjects = useMemo(() => {
-    // First fuzzy search with title/tags
     const searchResults =
       searchQuery.trim() === ''
         ? projectData
-        : fuse.search(searchQuery).map((result) => result.item);
+        : fuse.search(searchQuery).map((res) => res.item);
 
-    // Then filter based on selectedTags
+    if (selectedTags.length === 0) return searchResults;
+
+    // require that each selected tag exists in project.tags
     return searchResults.filter((project) =>
       selectedTags.every((tag) => project.tags.includes(tag))
     );
-  }, [fuse, searchQuery, selectedTags, projectData]);
+  }, [projectData, fuse, searchQuery, selectedTags]);
 
   // === Menu ===
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -339,16 +445,42 @@ export default function AdvancedSearchPage() {
           />
         </div>
         {/* Filters */}
-        <div className="flex flex-wrap gap-2 mb-6">
+        {/* <div className="flex flex-wrap gap-2 mb-6">
           {allTags.map((tag) => (
             <Badge
-              key={tag}
-              variant={selectedTags.includes(tag) ? 'default' : 'outline'}
-              onClick={() => handleTagClick(tag)}
+            key={tag.id ?? tag.name}
+              variant={selectedTags.includes(tag.name) ? 'default' : 'outline'}
+              onClick={() => handleTagClick(tag.name)}
               className={clsx('cursor-pointer select-none text-md')}
             >
-              {tag}
+              {tag.name}
             </Badge>
+          ))}
+        </div> */}
+
+        <div className="flex flex-col gap-4 mb-6">
+          {Object.entries(
+            allTags.reduce((acc, tag) => {
+              if (!acc[tag.category]) acc[tag.category] = [];
+              acc[tag.category].push(tag);
+              return acc;
+            }, {} as Record<string, typeof allTags>)
+          ).map(([category, tags]) => (
+            <div key={category}>
+              <h3 className="font-semibold text-xl mb-2 text-primary border-b-2 border-primary/65">{category.toUpperCase()}:</h3>
+              <div className="flex flex-wrap gap-2">
+                {tags.map((tag) => (
+                  <Badge
+                    key={tag.id ?? tag.name}
+                    variant={selectedTags.includes(tag.name) ? "default" : "outline"}
+                    onClick={() => handleTagClick(tag.name)}
+                    className={clsx("cursor-pointer select-none text-md")}
+                  >
+                    {tag.name}
+                  </Badge>
+                ))}
+              </div>
+            </div>
           ))}
         </div>
 
