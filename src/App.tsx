@@ -24,6 +24,7 @@ import AddProjectForm from '@/components/AddProjectForm.tsx'; // Adjust the path
 import LoginForm from '@/components/LoginForm.tsx';
 import ProjectModal from "@/components/ProjectModal.tsx";
 import EditProjectForm from "@/components/EditProjectForm.tsx";
+import TagManagerForm from "@/components/TagManagerForm.tsx";
 import ProtectedRoute from '@/components/ProtectedRoute.tsx';
 import { useAuth } from '@/components/AuthContext';
 
@@ -526,14 +527,27 @@ export default function AdvancedSearchPage() {
           <a href="#">GitHub</a>
 {/* <a href="#">Twitter</a> */}
           {user && (
+             <Link
+                  to={'/tags-manager'}
+                  // className="text-sm bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  className={'cursor-pointer select-none text-md rounded hover:bg-primary/30'}
+                >
+                Tags Manager
+              </Link>
+          )}
+          
+          {user && (
             <Link
                 to="/add-project"
                 // className="text-sm bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                className={'cursor-pointer select-none text-md'}
+                className={'cursor-pointer select-none text-md rounded hover:bg-primary/30'}
               >
               Add New Project
             </Link>
           )}
+
+          
+
           {!user ? (
             <Link
                 to="/login"
@@ -563,6 +577,12 @@ export default function AdvancedSearchPage() {
               element={
                 <ProtectedRoute>
                   <AddProjectForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/tags-manager" element={
+                <ProtectedRoute>
+                  <TagManagerForm />
                 </ProtectedRoute>
               }
             />
