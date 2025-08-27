@@ -4,8 +4,16 @@ import { supabase } from '@/lib/supabaseClient';
 import type { User } from '@supabase/supabase-js';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import clsx from 'clsx';
 // import { Textarea } from '@/components/ui/textarea';
 // import { Badge } from '@/components/ui/badge';
+
+type TagRow = {
+  id: string; // uuid
+  name: string;
+  category: string;
+};
 
 export default function EditProjectForm() {
   const [user, setUser] = useState<User | null>(null); // 👈 new user state
@@ -26,6 +34,7 @@ export default function EditProjectForm() {
   const [extra_link, setExtraLink] = useState('');
   const [software, setSoftware] = useState<string>(''); // store as JSON string or comma-separated
 
+
   // Fetch the user on mount
   useEffect(() => {
     const getUser = async () => {
@@ -40,13 +49,29 @@ export default function EditProjectForm() {
     getUser();
   }, []);
 
+  //===Tags===
+  const [allTags, setAllTags] = useState<TagRow[]>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
+   // Fetch all tags
+   useEffect(() => {
+    const fetchAllTags = async () => {
+      const { data, error } = await supabase.from("tags").select("*");
+      if (error) {
+        console.error("Error fetching tags:", error);
+      } else {
+        setAllTags(data as TagRow[]);
+      }
+    };
+
+    fetchAllTags();
+  }, []);
   
 
   useEffect(() => {
     const fetchProject = async () => {
       const { data, error } = await supabase
-        .from('projects')
+        .from('projectsV2')
         .select('*')
         .eq('id', id)
         .single();
@@ -58,7 +83,11 @@ export default function EditProjectForm() {
 
       setTitle(data.title);
       setDescription(data.description);
+
+      // flatten tag names: setTags(data.tags?.map((t: any) => t.name).join(', ') || '');
       setTags(data.tags?.join(', ') || '');
+      setSelectedTags(data.tags || []); // also toggle the already selected tags 
+
       setImageUrls(data.image_url?.join(', ') || '');
       setGithub(data.github_link || '');
       setItch(data.itch_link || '');
@@ -74,15 +103,22 @@ export default function EditProjectForm() {
   }, [id]);
 
 
+  const handleTagClick = (tagName: string) => {
+    setSelectedTags((prev) =>
+      prev.includes(tagName)
+        ? prev.filter((t) => t !== tagName) // remove if already selected
+        : [...prev, tagName] // add if not selected
+    );
+  };
 
 
-  const handleUpdate = async () => {
+  const handleUpdate = async () => {    
     const { error } = await supabase
-      .from('projects')
+      .from('projectsV2')
       .update({
         title,
         description,
-        tags: tags.split(',').map((tag) => tag.trim()),
+        tags: selectedTags.map((tag) => tag.trim()),
         image_url: imageUrls.split(',').map((url) => url.trim()),
         github_link,
         itch_link,
@@ -164,12 +200,44 @@ export default function EditProjectForm() {
         />
 
         <label className="block font-medium text-sm dark:text-white">Tags (comma separated)</label>
-        <Input
+        {/* <Input
             placeholder="Tags (comma separated)"
             value={tags}
             onChange={(e) => setTags(e.target.value)}
             className="p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white mb-4"
-        />
+        /> */}
+        <div className="block font-medium text-sm dark:text-white border-2 border-primary/65">
+          {Object.entries(
+            allTags.reduce((acc, tag) => {
+              if (!acc[tag.category]) acc[tag.category] = [];
+              acc[tag.category].push(tag);
+              return acc;
+            }, {} as Record<string, typeof allTags>)
+          ).map(([category, tags]) => (
+            <div key={category}>
+              <h3 className="block font-medium text-sm dark:text-white pb-1 pl-1 pt-2 border-b-2 border-primary/65">
+                {category.toUpperCase()}:
+              </h3>
+              <div className="flex flex-wrap gap-2 mb-2">
+                {tags.map((tag) => (
+                  <Badge
+                    key={tag.id ?? tag.name}
+                    variant={selectedTags.includes(tag.name) ? "default" : "outline"}
+                    onClick={() => handleTagClick(tag.name)}
+                    className={clsx(
+                      "cursor-pointer select-none text-md transition",
+                      selectedTags.includes(tag.name)
+                        ? "bg-primary text-white"
+                        : "hover:bg-primary/10"
+                    )}
+                  >
+                    {tag.name}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
 
         <label className="block font-medium text-sm dark:text-white">Image URLs (comma separated):</label>
         <Input
