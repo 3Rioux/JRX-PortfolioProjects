@@ -24,8 +24,16 @@ import AddProjectForm from '@/components/AddProjectForm.tsx'; // Adjust the path
 import LoginForm from '@/components/LoginForm.tsx';
 import ProjectModal from "@/components/ProjectModal.tsx";
 import EditProjectForm from "@/components/EditProjectForm.tsx";
+import TagManagerForm from "@/components/TagManagerForm.tsx";
 import ProtectedRoute from '@/components/ProtectedRoute.tsx';
 import { useAuth } from '@/components/AuthContext';
+
+
+type TagObj = {
+  id: string; // uuid
+  name: string;
+  category: string;
+};
 
 type Project = {
   id: number;
@@ -74,46 +82,100 @@ export default function AdvancedSearchPage() {
   const [searchQuery, setSearchQuery] = useState('');
 
   const [projectData, setProjectData] = useState<Project[]>([]);
+  const [tagsData, setTagsData] = useState<TagObj[]>([]);
   const [loading, setLoading] = useState(true);
 
   //Pop-up Model:
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
-  useEffect(() => {
-    const fetchProjects = async () => {
+  // useEffect(() => {
+  //   const fetchProjects = async () => {
 
-      setAllTags(defaultTags);
+  //     setAllTags(defaultTags);
 
-      setLoading(true);
-      const { data, error } = await supabase.from('projects').select('*');
-      if (error) {
-        console.error('Error fetching projects:', error.message);
-      } else {
-        console.debug('successfully fetching projects:');
-        setProjectData(data as Project[]);
-        console.log('Project data fetched:', data); // Add this line
+  //     setLoading(true);
+  //     const { data, error } = await supabase.from('projects').select('*');
+  //     if (error) {
+  //       console.error('Error fetching projects:', error.message);
+  //     } else {
+  //       console.debug('successfully fetching projects:');
+  //       setProjectData(data as Project[]);
+  //       console.log('Project data fetched:', data); // Add this line
 
-        // Extract all tags from the database
-        const dbTags = data
-        .flatMap((project) => project.tags || []) // Flatten tags arrays
-        .filter(Boolean); // Remove null/undefined
+  //       // Extract all tags from the database
+  //       const dbTags = data
+  //       .flatMap((project) => project.tags || []) // Flatten tags arrays
+  //       .filter(Boolean); // Remove null/undefined
 
-        // Merge with genres & types, remove duplicates
-        const uniqueTags = Array.from(
-          new Set([...genres, ...types, ...dbTags])
-        );
+  //       // Merge with genres & types, remove duplicates
+  //       const uniqueTags = Array.from(
+  //         new Set([...genres, ...types, ...dbTags])
+  //       );
 
-        // Sort alphabetically
-        uniqueTags.sort((a, b) => a.localeCompare(b));
+  //       // Sort alphabetically
+  //       uniqueTags.sort((a, b) => a.localeCompare(b));
 
-        //Set tags to the unique tags found in the database 
-        setAllTags(uniqueTags);
-      }//end if else 
+  //       //Set tags to the unique tags found in the database 
+  //       setAllTags(uniqueTags);
+  //     }//end if else 
       
+  //     setLoading(false);
+  //   };
+
+  //   fetchProjects();
+  // }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+  
+      try {
+        // 1. Fetch projects
+        const { data: projectData, error: projectError } = await supabase
+        .from('projects')
+        .select('*');
+  
+        if (projectError) {
+          console.error('Error fetching projects:', projectError.message);
+        } else {
+          setProjectData(projectData as Project[]);
+          console.log('Project data fetched:', projectData);
+        }
+  
+        // 2. Fetch tags
+        const { data: tagsData, error: tagsError } = await supabase
+          .from('tags')
+          .select('*')
+          .order('name', { ascending: true });
+  
+        if (tagsError) {
+          console.error('Error fetching tags:', tagsError.message);
+        } else {
+          console.log('Tags fetched:', tagsData);
+          
+          //store the full tag objects
+          setTagsData(tagsData as TagObj[]);
+
+          // Extract names
+          const tagNames = (tagsData || []).map((tag) => tag.name);
+  
+          // Merge with defaultTags, remove duplicates
+          const uniqueTags = Array.from(new Set([...defaultTags, ...tagNames]));
+  
+          // Sort alphabetically
+          uniqueTags.sort((a, b) => a.localeCompare(b));
+  
+          // ✅ Set tags state
+          setAllTags(uniqueTags);
+        }
+      } catch (err) {
+        console.error('Unexpected error:', err);
+      }
+  
       setLoading(false);
     };
-
-    fetchProjects();
+  
+    fetchData();
   }, []);
 
   const fuse = useMemo(
@@ -170,6 +232,18 @@ export default function AdvancedSearchPage() {
       document.removeEventListener("touchstart", handleOutside);
     };
   }, [isMenuOpen]);
+
+
+
+  // Group tags by category
+  const groupedTags = useMemo(() => {
+    return tagsData.reduce<Record<string, TagObj[]>>((acc, tag) => {
+      if (!acc[tag.category]) acc[tag.category] = [];
+      acc[tag.category].push(tag);
+      return acc;
+    }, {});
+  }, [tagsData]);
+
 
   return (
     <div className="bg-background text-foreground">
@@ -339,7 +413,7 @@ export default function AdvancedSearchPage() {
           />
         </div>
         {/* Filters */}
-        <div className="flex flex-wrap gap-2 mb-6">
+        {/* <div className="flex flex-wrap gap-2 mb-6">
           {allTags.map((tag) => (
             <Badge
               key={tag}
@@ -350,7 +424,35 @@ export default function AdvancedSearchPage() {
               {tag}
             </Badge>
           ))}
+        </div> */}
+
+        <div className="flex flex-col gap-4 ml-2 mb-6">
+          {Object.entries(groupedTags).map(([category, tags]) => (
+            <div key={category}>
+              {/* Category heading */}
+              <h3 className="font-semibold text-lg mb-2 border-b-2 border-primary/65 dark:text-white">
+                {category.toUpperCase()}:
+              </h3>
+
+              {/* Tags inside this category */}
+              <div className="flex flex-wrap gap-2">
+                {tags.map((tag) => (
+                  <Badge
+                    key={tag.id}
+                    variant={selectedTags.includes(tag.name) ? "default" : "outline"}
+                    onClick={() => handleTagClick(tag.name)}
+                    className={clsx("cursor-pointer select-none text-md")}
+                  >
+                    {tag.name}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
+
+        {/* Divider between projects and tags  */}
+        <div className='font-semibold text-lg mb-4 text-primary border-b-4 border-primary/80 dark:text-white'></div>
 
         {/* Project Cards Grid */}
         {loading ? (
@@ -425,14 +527,27 @@ export default function AdvancedSearchPage() {
           <a href="#">GitHub</a>
 {/* <a href="#">Twitter</a> */}
           {user && (
+             <Link
+                  to={'/tags-manager'}
+                  // className="text-sm bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  className={'cursor-pointer select-none text-md rounded hover:bg-primary/30'}
+                >
+                Tags Manager
+              </Link>
+          )}
+          
+          {user && (
             <Link
                 to="/add-project"
                 // className="text-sm bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                className={'cursor-pointer select-none text-md'}
+                className={'cursor-pointer select-none text-md rounded hover:bg-primary/30'}
               >
               Add New Project
             </Link>
           )}
+
+          
+
           {!user ? (
             <Link
                 to="/login"
@@ -462,6 +577,12 @@ export default function AdvancedSearchPage() {
               element={
                 <ProtectedRoute>
                   <AddProjectForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/tags-manager" element={
+                <ProtectedRoute>
+                  <TagManagerForm />
                 </ProtectedRoute>
               }
             />
