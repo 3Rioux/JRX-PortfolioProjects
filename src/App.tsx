@@ -326,7 +326,7 @@ export default function AdvancedSearchPage() {
                 className="md:hidden p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
               >
-                {isMenuOpen ? <X className="h-6 w-6" color="#fff" strokeWidth={2} /> : <Menu className="h-6 w-6" color="#fff" strokeWidth={2} />}
+                {isMenuOpen ? <X className="h-6 w-6 text-black dark:text-white"  strokeWidth={2} /> : <Menu className="h-6 w-6 text-black dark:text-white" strokeWidth={2} />}
               </button>
         </div>
 
