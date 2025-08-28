@@ -60,8 +60,8 @@ export default function ProjectModal({ isOpen, onClose, project }: ProjectModalP
       <Transition show={isOpen} as={Fragment}>
         <Dialog onClose={onClose} className="fixed inset-0 z-50">
           <div className="fixed inset-0 backdrop-blur-sm" aria-hidden="true" />
-          <div className="fixed inset-0 flex items-center justify-center p-4 overflow-y-auto ">
-            <DialogPanel className="w-full max-w-screen-md max-h-9/10 overflow-y-auto max-w-7xl bg-white rounded-2xl shadow-xl p-4 relative">
+          <div className="fixed inset-0 flex items-center justify-center p-4 overflow-y-auto overscroll-contain">
+            <DialogPanel className="w-full max-w-screen-md max-h-9/10 overflow-y-auto overscroll-contain max-w-7xl bg-white md:rounded-2xl xxs:rounded-sm shadow-xl p-4 relative">
               {/* Close Button */}
               <div className="mb-5">
                 <button
@@ -88,7 +88,7 @@ export default function ProjectModal({ isOpen, onClose, project }: ProjectModalP
               </div> */}
 
               {/* Main Carousel */}
-              <div className="relative w-full aspect-video overflow-hidden rounded-xl mb-4">
+              <div className="relative w-full aspect-video rounded-xl mb-4">
                     {/* Main Image */}
                     <img
                       src={images[current]}
