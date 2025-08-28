@@ -3,7 +3,18 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import type { User } from '@supabase/supabase-js';
 
+import { Badge } from '@/components/ui/badge';
+
 // const { data: { user } } = await supabase.auth.getUser(); //Get Logged in user 
+
+import clsx from 'clsx';
+
+
+type TagObj = {
+  id: string; // uuid
+  name: string;
+  category: string;
+};
 
 export default function AddProjectForm() {
   const [user, setUser] = useState<User | null>(null); // 👈 new user state
@@ -11,9 +22,9 @@ export default function AddProjectForm() {
   const navigate = useNavigate();
 
   const [title, setTitle] = useState('');
-  const [members, setMembers] = useState('');
+  const [members, setMembers] = useState('1');
   const [description, setDescription] = useState('');
-  const [tags, setTags] = useState('');
+  // const [tags, setTags] = useState('');
   const [contribution, setContribution] = useState('');
   // const [softwareList, setSoftwareList] = useState([{ name: '', icon: '' }]);
   const [softwareList, setSoftwareList] = useState<{ name: string; icon: string }[]>([]);
@@ -53,6 +64,10 @@ export default function AddProjectForm() {
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+
+
+  const [allTags, setAllTags] = useState<TagObj[]>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   // Fetch the user on mount
   useEffect(() => {
@@ -160,7 +175,8 @@ const handleSubmit = async (e: React.FormEvent) => {
       title,
       members,
       description,
-      tags: tags.split(',').map((tag) => tag.trim()),
+      // tags: tags.split(',').map((tag) => tag.trim()),
+      tags: selectedTags.map((tag) => tag.trim()),
       image_url: imageUrls, 
       user_id: user?.id,
       contribution,
@@ -177,9 +193,11 @@ const handleSubmit = async (e: React.FormEvent) => {
   } else {
     setMessage('✅ Project added!');
     setTitle('');
+    console.log("Members: ", members);
     setMembers('');
     setDescription('');
-    setTags('');
+    // setTags('');
+    setSelectedTags([]);
     setContribution('');
     setGithubLink('');
     setItchLink('');
@@ -191,19 +209,43 @@ const handleSubmit = async (e: React.FormEvent) => {
   setLoading(false);
 };
 
+// ====== Tags ======
+  // fetch All Tags on mount
+  useEffect(() => {
+    const fetchTags = async () => {
+    setLoading(true);
+    const { data, error } = await supabase.from("tags").select("*");
+    if (error) {
+        console.error("Error fetching tags:", error.message);
+    } else {
+      setAllTags(data as TagObj[]);
+    }
+    setLoading(false);
+    };
+    fetchTags();
+  }, []);
+
+  const handleTagClick = (tagName: string) => {
+    setSelectedTags((prev) =>
+      prev.includes(tagName)
+        ? prev.filter((t) => t !== tagName) // remove if already selected
+        : [...prev, tagName] // add if not selected
+    );
+  };
+
   return (
-    <div className="bg-muted text-foreground border shadow-sm p-4 rounded-xl max-w-xl mx-auto mt-10">
+    <div className="bg-muted text-foreground border shadow-sm p-4 rounded-2xl  mx-auto mt-10">
       
       {/* Back Button */}
       <button
         type="button"
-        onClick={() => navigate('/')}
+        onClick={() => navigate('/JRX-PortfolioProjects/')}
         className="mb-4 px-3 py-1 bg-gray-300 hover:bg-gray-400 text-black rounded dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
       >
         ← Back
       </button>
       
-      <div className="flex flex-col gap-2 max-w-md mx-auto dark:text-violet-500">
+      <div className="flex flex-col gap-2 mx-auto dark:text-violet-500">
         {user ? (
           <p className='border-4 border-solid text-center'>Adding Under User - {user.email}</p>
         ) : (
@@ -213,9 +255,11 @@ const handleSubmit = async (e: React.FormEvent) => {
       
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-2 max-w-md mx-auto"
+        className="flex flex-col gap-2 mx-auto"
       >
         <h2 className="font-bold mb-1 text-xl dark:text-white">Add a Project</h2>
+{/* Title */}
+        <label className="block font-medium text-sm dark:text-white">Title:</label>
         <input
           type="text"
           placeholder="Title"
@@ -224,13 +268,30 @@ const handleSubmit = async (e: React.FormEvent) => {
           required
           className="p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white"
         />
+{/* Team Member Count */}
+        <label className="block font-medium text-sm dark:text-white">Team Member Count:</label>
         <input
           type="number"
           placeholder="# of members working of project (int)"
           value={members}
-          onChange={(e) => setMembers(e.target.value)}
+          // !!! No zero validation is super ugly !!!
+          onChange={(e) =>{
+            setMembers(e.target.value);
+            // Allow only positive integers (no decimals, no negatives)
+            if (/^\d+$/.test(members)) {
+              setMembers(e.target.value === "0"? '1' : e.target.value );
+            }
+          }}
+          // onBlur handler to reset the value to 1 if the field is left empty or invalid
+          onBlur={() => {
+            if (!members || Number(members) <= 0) {
+              setMembers('1');
+            }
+          }}
           className="p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white"
         />
+{/* Description */}
+        <label className="block font-medium text-sm dark:text-white">Description:</label>
         <textarea
           placeholder="Description"
           value={description}
@@ -238,19 +299,62 @@ const handleSubmit = async (e: React.FormEvent) => {
           required
           className="p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white"
         />
-        <input
+{/* Tags */}
+        {/* <input
           type="text"
           placeholder="Tags (comma-separated)"
           value={tags}
           onChange={(e) => setTags(e.target.value)}
           className="p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white"
-        />
+        /> */}
+
+        <label className="block font-medium text-sm dark:text-white">Select Tag(s):</label>
+        {/* <Input
+            placeholder="Tags (comma separated)"
+            value={tags}
+            onChange={(e) => setTags(e.target.value)}
+            className="p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white mb-4"
+        /> */}
+        <div className="block font-medium text-sm dark:text-white border-2 border-primary/65">
+          {Object.entries(
+            allTags.reduce((acc, tag) => {
+              if (!acc[tag.category]) acc[tag.category] = [];
+              acc[tag.category].push(tag);
+              return acc;
+            }, {} as Record<string, typeof allTags>)
+          ).map(([category, tags]) => (
+            <div key={category}>
+              <h3 className="block font-medium text-sm dark:text-white pb-1 pl-1 pt-2 border-b-2 border-primary/65">
+                {category.toUpperCase()}:
+              </h3>
+              <div className="flex flex-wrap gap-2 mb-2">
+                {tags.map((tag) => (
+                  <Badge
+                    key={tag.id ?? tag.name}
+                    variant={selectedTags.includes(tag.name) ? "default" : "outline"}
+                    onClick={() => handleTagClick(tag.name)}
+                    className={clsx(
+                      "cursor-pointer select-none text-primary text-md transition mt-1 ml-1 p-1",
+                      selectedTags.includes(tag.name)
+                        ? "bg-primary text-white"
+                        : "hover:bg-primary/10"
+                    )}
+                  >
+                    {tag.name}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
         {/* <input
           type="file"
           accept="image/*"
           onChange={(e) => setImageFile(e.target.files?.[0] || null)}
         /> */}
-
+{/* Roles */}
+        <label className="block font-medium text-sm dark:text-white">Select Tag(s):</label>
         <textarea
           placeholder="Your Role / Contribution (Role 1 - Role 2 - Role 3 - ...)"
           value={contribution}
@@ -258,7 +362,7 @@ const handleSubmit = async (e: React.FormEvent) => {
           className="p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white"
         />
 
-        {/* Dynamic Software List */}
+{/* Dynamic Software List */}
         <div className="space-y-2">
           <label className="block font-medium text-sm dark:text-white">Software Used</label>
           {softwareList.map((item, index) => (
@@ -324,7 +428,8 @@ const handleSubmit = async (e: React.FormEvent) => {
           </button>
         </div>
 
-        {/* Optional links */}
+{/* Optional links */}
+        <label className="block font-medium text-sm dark:text-white">Github Link:</label>
         <input
           type="url"
           placeholder="Project GitHub Link"
@@ -332,6 +437,7 @@ const handleSubmit = async (e: React.FormEvent) => {
           onChange={(e) => setGithubLink(e.target.value)}
           className="p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white"
         />
+        <label className="block font-medium text-sm dark:text-white">Itch Link:</label>
         <input
           type="url"
           placeholder="Project Itch.io Link"
@@ -339,6 +445,7 @@ const handleSubmit = async (e: React.FormEvent) => {
           onChange={(e) => setItchLink(e.target.value)}
           className="p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white"
         />
+        <label className="block font-medium text-sm dark:text-white">Extra Link: (ex: website built)</label>
         <input
           type="url"
           placeholder="Project External Link (Like link to the page)"

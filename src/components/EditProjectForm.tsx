@@ -5,7 +5,16 @@ import type { User } from '@supabase/supabase-js';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 // import { Textarea } from '@/components/ui/textarea';
-// import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/badge';
+
+import clsx from 'clsx';
+
+
+type TagObj = {
+  id: string; // uuid
+  name: string;
+  category: string;
+};
 
 export default function EditProjectForm() {
   const [user, setUser] = useState<User | null>(null); // 👈 new user state
@@ -25,6 +34,10 @@ export default function EditProjectForm() {
   const [itch_link, setItch] = useState('');
   const [extra_link, setExtraLink] = useState('');
   const [software, setSoftware] = useState<string>(''); // store as JSON string or comma-separated
+
+
+  const [allTags, setAllTags] = useState<TagObj[]>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   // Fetch the user on mount
   useEffect(() => {
@@ -59,6 +72,7 @@ export default function EditProjectForm() {
       setTitle(data.title);
       setDescription(data.description);
       setTags(data.tags?.join(', ') || '');
+      setSelectedTags(data.tags || []); // also toggle the already selected tags 
       setImageUrls(data.image_url?.join(', ') || '');
       setGithub(data.github_link || '');
       setItch(data.itch_link || '');
@@ -74,7 +88,28 @@ export default function EditProjectForm() {
   }, [id]);
 
 
+  // fetch All Tags on mount
+  useEffect(() => {
+      const fetchTags = async () => {
+      setLoading(true);
+      const { data, error } = await supabase.from("tags").select("*");
+      if (error) {
+          console.error("Error fetching tags:", error.message);
+      } else {
+        setAllTags(data as TagObj[]);
+      }
+      setLoading(false);
+      };
+      fetchTags();
+  }, []);
 
+  const handleTagClick = (tagName: string) => {
+    setSelectedTags((prev) =>
+      prev.includes(tagName)
+        ? prev.filter((t) => t !== tagName) // remove if already selected
+        : [...prev, tagName] // add if not selected
+    );
+  };
 
   const handleUpdate = async () => {
     const { error } = await supabase
@@ -82,7 +117,8 @@ export default function EditProjectForm() {
       .update({
         title,
         description,
-        tags: tags.split(',').map((tag) => tag.trim()),
+        // tags: tags.split(',').map((tag) => tag.trim()),
+        tags: selectedTags.map((tag) => tag.trim()),
         image_url: imageUrls.split(',').map((url) => url.trim()),
         github_link,
         itch_link,
@@ -99,11 +135,12 @@ export default function EditProjectForm() {
       setMessage(`Update Successfull`)
     }
   };
+  
 
   // return to projects list button but still have time to review and see a success message 
   const handleDone = () => {
     //navigate('/searchprojects');
-    navigate('/'); // redirect to homepage or project view
+    navigate('/JRX-PortfolioProjects/'); // redirect to homepage or project view
   };
   
   if (loading) return <p className="text-center mt-10">Loading project...</p>;
@@ -117,7 +154,7 @@ export default function EditProjectForm() {
 
   return (
     // <div className="max-w-3xl mx-auto p-6">
-    <div className="bg-muted text-foreground border shadow-sm p-4 rounded-xl max-w-xl mx-auto mt-10">
+    <div className="bg-muted text-foreground border shadow-sm p-4 rounded-2xl  mx-auto mt-10">
       
       {/* Back Button */}
       <button
@@ -129,7 +166,7 @@ export default function EditProjectForm() {
       </button>
 
       {/* Who is trying to Update the Project */}
-      <div className="flex flex-col gap-2 max-w-md mx-auto dark:text-violet-500">
+      <div className="flex flex-col gap-2  mx-auto dark:text-violet-500">
         {user ? (
           <p className='border-2 border-solid text-center'>Adding Under User - {user.email}</p>
         ) : (
@@ -144,7 +181,7 @@ export default function EditProjectForm() {
         )}
       </div>
 
-      <div className="flex flex-col gap-2 max-w-md mx-auto dark:text-violet-500">
+      <div className="flex flex-col gap-2  mx-auto dark:text-violet-500">
       <h1 className="text-2xl font-bold mb-4">Edit Project</h1>
 
         <label className="block font-medium text-sm dark:text-white">Title:</label>
@@ -163,13 +200,47 @@ export default function EditProjectForm() {
             className="p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white mb-4"
         />
 
-        <label className="block font-medium text-sm dark:text-white">Tags (comma separated)</label>
-        <Input
+{/* Tags */}
+        <label className="block font-medium text-sm dark:text-white">Tags</label>
+        {/* <Input
             placeholder="Tags (comma separated)"
             value={tags}
             onChange={(e) => setTags(e.target.value)}
             className="p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white mb-4"
-        />
+        /> */}
+        <div className="block font-medium text-sm dark:text-white border-2 border-primary/65">
+          {Object.entries(
+            allTags.reduce((acc, tag) => {
+              if (!acc[tag.category]) acc[tag.category] = [];
+              acc[tag.category].push(tag);
+              return acc;
+            }, {} as Record<string, typeof allTags>)
+          ).map(([category, tags]) => (
+            <div key={category}>
+              <h3 className="block font-medium text-sm dark:text-white pb-1 pl-1 pt-2 border-b-2 border-primary/65">
+                {category.toUpperCase()}:
+              </h3>
+              <div className="flex flex-wrap gap-2 mb-2">
+                {tags.map((tag) => (
+                  <Badge
+                    key={tag.id ?? tag.name}
+                    variant={selectedTags.includes(tag.name) ? "default" : "outline"}
+                    onClick={() => handleTagClick(tag.name)}
+                    className={clsx(
+                      "cursor-pointer select-none text-primary text-md transition mt-1 ml-1 p-1",
+                      selectedTags.includes(tag.name)
+                        ? "bg-primary text-white"
+                        : "hover:bg-primary/10"
+                    )}
+                  >
+                    {tag.name}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
 
         <label className="block font-medium text-sm dark:text-white">Image URLs (comma separated):</label>
         <Input

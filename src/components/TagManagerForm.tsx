@@ -48,21 +48,21 @@ export default function TagManagerForm() {
     }, [status]);
 
 
- // fetch tags on mount
- useEffect(() => {
-    const fetchTags = async () => {
-      setLoading(true);
-      const { data, error } = await supabase.from("tags").select("*");
-      if (error) {
-        console.error("Error fetching tags:", error.message);
-        setStatus("error");
-      } else {
-        setTags(data as TagObj[]);
-      }
-      setLoading(false);
-    };
-    fetchTags();
-  }, []);
+    // fetch tags on mount
+    useEffect(() => {
+        const fetchTags = async () => {
+        setLoading(true);
+        const { data, error } = await supabase.from("tags").select("*");
+        if (error) {
+            console.error("Error fetching tags:", error.message);
+            setStatus("error");
+        } else {
+            setTags(data as TagObj[]);
+        }
+        setLoading(false);
+        };
+        fetchTags();
+    }, []);
 
   // get list of categories from current tags
   const categories = Array.from(new Set(tags.map((t) => t.category))).sort();
