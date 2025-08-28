@@ -279,7 +279,7 @@ export default function AdvancedSearchPage() {
             Home
           </a>
           <a 
-            href="https://jrxportfolioprojects-0y4z--5173--96435430.local-credentialless.webcontainer.io/JRX-PortfolioProjects/" 
+            href="/JRX-PortfolioProjects/" 
             className="text-lg md:text-xl hover:underline">
             Projects
           </a>
@@ -347,7 +347,7 @@ export default function AdvancedSearchPage() {
             Home
           </a>
           <a
-            href="/"
+            href="/JRX-PortfolioProjects/"
             className="text-lg hover:underline"
             onClick={() => setIsMenuOpen(false)}
           >
