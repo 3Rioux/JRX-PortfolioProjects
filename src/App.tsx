@@ -594,8 +594,8 @@ export default function AdvancedSearchPage() {
       <footer className="mt-16 border-t pt-6 text-sm text-gray-500 flex flex-col md:flex-row justify-between items-center">
         <p>© 2025 MyPortfolio</p>
         <div className="flex gap-4 mt-2 md:mt-0">
-          <a href="#">LinkedIn</a>
-          <a href="#">GitHub</a>
+          <a href="https://www.linkedin.com/in/justin-rioux-022785335">LinkedIn</a>
+          <a href="https://github.com/3Rioux">GitHub</a>
       {/* <a href="#">Twitter</a> */}
           {user && (
              <Link
