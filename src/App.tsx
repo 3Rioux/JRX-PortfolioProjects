@@ -88,6 +88,11 @@ export default function AdvancedSearchPage() {
   //Pop-up Model:
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
+
+  // Return to Top/Bottom buttons:
+  const [showTop, setShowTop] = useState(false);
+  const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
+
   // useEffect(() => {
   //   const fetchProjects = async () => {
 
@@ -182,6 +187,36 @@ export default function AdvancedSearchPage() {
     fetchData();
   }, [fetchData]);
 
+
+  // === Return to top/bottom button 
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 100) {
+        setShowTop(true);
+
+        // reset timer each time user scrolls
+        if (timer) clearTimeout(timer);
+        const newTimer = setTimeout(() => setShowTop(false), 1500); // hide after 1.5s
+        setTimer(newTimer);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (timer) clearTimeout(timer);
+    };
+  }, [timer]);
+
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const scrollToBottom = () => {
+    window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+  };
+
   const fuse = useMemo(
     () =>
       new Fuse(projectData, {
@@ -247,7 +282,6 @@ export default function AdvancedSearchPage() {
       return acc;
     }, {});
   }, [tagsData]);
-
 
   return (
     <div className="bg-background text-foreground">
@@ -535,6 +569,26 @@ export default function AdvancedSearchPage() {
             <RefreshCw className="min-w-6 min-h-6"  strokeWidth={3}></RefreshCw>
           </Button>
       </div>
+{/* Scroll Top/Bottom */}
+      <div className="fixed bottom-6 right-6 flex flex-col gap-1">
+        {showTop && (
+          <>
+            <Button
+              onClick={scrollToTop}
+              className="px-3 py-2 rounded-full bg-primary/70 text-white text-md hover:shadow-lg hover:bg-primary/90 transition-opacity"
+            >
+              ↑ Top
+            </Button>
+            {/* Placeholder for future Bottom button */}
+            <Button
+              onClick={scrollToBottom}
+              className="px-3 py-2 rounded-xl bg-primary/70 text-white text-sm hover:shadow-lg hover:bg-primary/90 transition-opacity"
+            >
+              ↓ Bottom
+            </Button>
+          </>
+        )}
+      </div>
        
       {/* Footer */}
       <footer className="mt-16 border-t pt-6 text-sm text-gray-500 flex flex-col md:flex-row justify-between items-center">
@@ -584,7 +638,7 @@ export default function AdvancedSearchPage() {
         </div>
 
       </footer>
-<div>
+      <div>
           <Routes>
             <Route path="/searchprojects" element={<AdvancedSearchPage />} />
             {/* <Route path="/add-project" element={<AddProjectForm />} /> */}
