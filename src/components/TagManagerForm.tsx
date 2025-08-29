@@ -196,7 +196,7 @@ return (
       {/* Back Button */}
       <button
         type="button"
-        onClick={() => navigate("/")}
+        onClick={() => navigate("/JRX-PortfolioProjects/")}
         className="mb-4 px-3 py-1 bg-gray-300 hover:bg-gray-400 text-black rounded dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
       >
         ← Back
