@@ -29,7 +29,7 @@ export default function TagManagerForm() {
     const [tags, setTags] = useState<TagObj[]>([]);
     const [loading, setLoading] = useState(false);
     const [status, setStatus] = useState<"success" | "error" | "warning" | null>(null);
-    const [sortMode, setSortMode] = useState<"asc" | "desc" | "category">("asc");
+    const [sortMode, setSortMode] = useState<"asc" | "desc" | "category">("category");
     const [message, setMessage] = useState("");
 
 
