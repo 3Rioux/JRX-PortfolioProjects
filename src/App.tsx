@@ -88,6 +88,10 @@ export default function AdvancedSearchPage() {
   //Pop-up Model:
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
+  //Focus on first project on reload 
+  const [reloadTriggered, setReloadTriggered] = useState(false);
+  const firstProjectRef = useRef<HTMLDivElement | null>(null);
+
 
   // Return to Top/Bottom buttons:
   const [showTop, setShowTop] = useState(false);
@@ -145,6 +149,12 @@ export default function AdvancedSearchPage() {
       } else {
         setProjectData(projectData as Project[]);
         console.log('Project data fetched:', projectData);
+
+        // Focus first project if reload was triggered
+        if (reloadTriggered) {
+            firstProjectRef.current?.focus();
+            setReloadTriggered(false); // reset
+        }
       }
 
       // 2. Fetch tags
@@ -178,7 +188,7 @@ export default function AdvancedSearchPage() {
     }
 
     setLoading(false);
-  }, []);
+  }, [reloadTriggered]);
 
 
   // === Get Projects On Load ===
@@ -497,7 +507,7 @@ export default function AdvancedSearchPage() {
           <p className="text-bg font-bold text-primary">Loading projects...</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredProjects.map((project) => (
+            {filteredProjects.map((project, index) => (
               <Card key={project.id} className="hover:shadow-lg transition-all">
                 <CardContent className="p-4 flex flex-col h-full">
                   {Array.isArray(project.image_url) && project.image_url.length > 0 ? (
@@ -561,7 +571,10 @@ export default function AdvancedSearchPage() {
       <div className="flex flex-col mx-auto text-center pt-2">
           <Button 
             className="text-xl "
-            onClick={fetchData}
+            onClick={() => {
+              setReloadTriggered(true);
+              fetchData
+            }}
             disabled={loading}
           >
             <RefreshCw className="min-w-6 min-h-6"  strokeWidth={3}></RefreshCw>
@@ -569,6 +582,8 @@ export default function AdvancedSearchPage() {
             <RefreshCw className="min-w-6 min-h-6"  strokeWidth={3}></RefreshCw>
           </Button>
       </div>
+
+
 {/* Scroll Top/Bottom */}
       <div className="fixed bottom-4 right-1 flex flex-col gap-1">
         {showTop && (
