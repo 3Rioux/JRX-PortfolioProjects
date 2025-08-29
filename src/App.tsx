@@ -242,6 +242,12 @@ export default function AdvancedSearchPage() {
     );
   };
 
+  
+  const clearSelectedTags = () => {
+    setSelectedTags([]);
+  };
+
+
   //Filter Projects With Search bar + Tags
   const filteredProjects = useMemo(() => {
     // First fuzzy search with title/tags
@@ -497,6 +503,11 @@ export default function AdvancedSearchPage() {
               </div>
             </div>
           ))}
+          <Button 
+            className='text-md text-blue-600 hover:underline ml-auto cursor-pointer select-none'
+            variant="link"
+            onClick={() => clearSelectedTags()}
+            >Clear Tags</Button>
         </div>
 
         {/* Divider between projects and tags  */}
