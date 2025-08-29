@@ -29,7 +29,7 @@ export default function TagManagerForm() {
     const [tags, setTags] = useState<TagObj[]>([]);
     const [loading, setLoading] = useState(false);
     const [status, setStatus] = useState<"success" | "error" | "warning" | null>(null);
-    const [sortMode, setSortMode] = useState<"asc" | "desc" | "category">("asc");
+    const [sortMode, setSortMode] = useState<"asc" | "desc" | "category">("category");
     const [message, setMessage] = useState("");
 
 
@@ -196,7 +196,7 @@ return (
       {/* Back Button */}
       <button
         type="button"
-        onClick={() => navigate("/")}
+        onClick={() => navigate("/JRX-PortfolioProjects/")}
         className="mb-4 px-3 py-1 bg-gray-300 hover:bg-gray-400 text-black rounded dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
       >
         ← Back

@@ -1,6 +1,6 @@
 'use client';
 import jrxLogoImage from './assets/Default_Logo_1024x1024.jpg';
-import { useEffect, useMemo, useState, useRef } from 'react';
+import { useEffect, useMemo, useState, useRef, useCallback } from 'react';
 import Fuse from 'fuse.js';
 
 import { Input } from '@/components/ui/input';
@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { ThemeProvider } from '@/components/theme-provider';
 import { ModeToggle } from '@/components/mode-toggle';
 
-import { Menu, X } from "lucide-react"; // icon library (shadcn/lucide)
+import { Menu, X, RefreshCw } from "lucide-react"; // icon library (shadcn/lucide)
 
 import clsx from 'clsx';
 
@@ -88,6 +88,15 @@ export default function AdvancedSearchPage() {
   //Pop-up Model:
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
+  //Focus on first project on reload 
+  const [reloadTriggered, setReloadTriggered] = useState(false);
+  const firstProjectRef = useRef<HTMLDivElement | null>(null);
+
+
+  // Return to Top/Bottom buttons:
+  const [showTop, setShowTop] = useState(false);
+  const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
+
   // useEffect(() => {
   //   const fetchProjects = async () => {
 
@@ -125,58 +134,98 @@ export default function AdvancedSearchPage() {
   //   fetchProjects();
   // }, []);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-  
-      try {
-        // 1. Fetch projects
-        const { data: projectData, error: projectError } = await supabase
-        .from('projects')
-        .select('*');
-  
-        if (projectError) {
-          console.error('Error fetching projects:', projectError.message);
-        } else {
-          setProjectData(projectData as Project[]);
-          console.log('Project data fetched:', projectData);
-        }
-  
-        // 2. Fetch tags
-        const { data: tagsData, error: tagsError } = await supabase
-          .from('tags')
-          .select('*')
-          .order('name', { ascending: true });
-  
-        if (tagsError) {
-          console.error('Error fetching tags:', tagsError.message);
-        } else {
-          console.log('Tags fetched:', tagsData);
-          
-          //store the full tag objects
-          setTagsData(tagsData as TagObj[]);
+  // Extract fetch function so it can be reused form load + Reload button 
+  const fetchData = useCallback(async () => {
+    setLoading(true);
 
-          // Extract names
-          const tagNames = (tagsData || []).map((tag) => tag.name);
-  
-          // Merge with defaultTags, remove duplicates
-          const uniqueTags = Array.from(new Set([...defaultTags, ...tagNames]));
-  
-          // Sort alphabetically
-          uniqueTags.sort((a, b) => a.localeCompare(b));
-  
-          // ✅ Set tags state
-          setAllTags(uniqueTags);
+    try {
+      // 1. Fetch projects
+      const { data: projectData, error: projectError } = await supabase
+      .from('projects')
+      .select('*');
+
+      if (projectError) {
+        console.error('Error fetching projects:', projectError.message);
+      } else {
+        setProjectData(projectData as Project[]);
+        console.log('Project data fetched:', projectData);
+
+        // Focus first project if reload was triggered
+        if (reloadTriggered) {
+            firstProjectRef.current?.focus();
+            setReloadTriggered(false); // reset
         }
-      } catch (err) {
-        console.error('Unexpected error:', err);
       }
-  
-      setLoading(false);
-    };
-  
+
+      // 2. Fetch tags
+      const { data: tagsData, error: tagsError } = await supabase
+        .from('tags')
+        .select('*')
+        .order('name', { ascending: true });
+
+      if (tagsError) {
+        console.error('Error fetching tags:', tagsError.message);
+      } else {
+        console.log('Tags fetched:', tagsData);
+        
+        //store the full tag objects
+        setTagsData(tagsData as TagObj[]);
+
+        // Extract names
+        const tagNames = (tagsData || []).map((tag) => tag.name);
+
+        // Merge with defaultTags, remove duplicates
+        const uniqueTags = Array.from(new Set([...defaultTags, ...tagNames]));
+
+        // Sort alphabetically
+        uniqueTags.sort((a, b) => a.localeCompare(b));
+
+        // ✅ Set tags state
+        setAllTags(uniqueTags);
+      }
+    } catch (err) {
+      console.error('Unexpected error:', err);
+    }
+
+    setLoading(false);
+  }, [reloadTriggered]);
+
+
+  // === Get Projects On Load ===
+  useEffect(() => {
+    //Call to load project on page load 
     fetchData();
-  }, []);
+  }, [fetchData]);
+
+
+  // === Return to top/bottom button 
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 100) {
+        setShowTop(true);
+
+        // reset timer each time user scrolls
+        if (timer) clearTimeout(timer);
+        const newTimer = setTimeout(() => setShowTop(false), 1500); // hide after 1.5s
+        setTimer(newTimer);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (timer) clearTimeout(timer);
+    };
+  }, [timer]);
+
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const scrollToBottom = () => {
+    window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+  };
 
   const fuse = useMemo(
     () =>
@@ -192,6 +241,12 @@ export default function AdvancedSearchPage() {
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
     );
   };
+
+  
+  const clearSelectedTags = () => {
+    setSelectedTags([]);
+  };
+
 
   //Filter Projects With Search bar + Tags
   const filteredProjects = useMemo(() => {
@@ -243,7 +298,6 @@ export default function AdvancedSearchPage() {
       return acc;
     }, {});
   }, [tagsData]);
-
 
   return (
     <div className="bg-background text-foreground">
@@ -425,7 +479,7 @@ export default function AdvancedSearchPage() {
             </Badge>
           ))}
         </div> */}
-
+{/* Tags Display */}
         <div className="flex flex-col gap-4 ml-2 mb-6">
           {Object.entries(groupedTags).map(([category, tags]) => (
             <div key={category}>
@@ -449,17 +503,22 @@ export default function AdvancedSearchPage() {
               </div>
             </div>
           ))}
+          <Button 
+            className='text-md text-blue-600 hover:underline ml-auto cursor-pointer select-none'
+            variant="link"
+            onClick={() => clearSelectedTags()}
+            >Clear Tags</Button>
         </div>
 
         {/* Divider between projects and tags  */}
         <div className='font-semibold text-lg mb-4 text-primary border-b-4 border-primary/80 dark:text-white'></div>
 
-        {/* Project Cards Grid */}
+{/* Project Display Cards Grid */}
         {loading ? (
           <p className="text-bg font-bold text-primary">Loading projects...</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredProjects.map((project) => (
+            {filteredProjects.map((project, index) => (
               <Card key={project.id} className="hover:shadow-lg transition-all">
                 <CardContent className="p-4 flex flex-col h-full">
                   {Array.isArray(project.image_url) && project.image_url.length > 0 ? (
@@ -518,14 +577,52 @@ export default function AdvancedSearchPage() {
             )}
           </div>
         )}
+
+{/* Reload Projects button */}
+      <div className="flex flex-col mx-auto text-center pt-2">
+          <Button 
+            className="text-xl "
+            onClick={() => {
+              setReloadTriggered(true);
+              fetchData
+            }}
+            disabled={loading}
+          >
+            <RefreshCw className="min-w-6 min-h-6"  strokeWidth={3}></RefreshCw>
+            {loading ? 'Reloading...' : 'Reload Projects'}
+            <RefreshCw className="min-w-6 min-h-6"  strokeWidth={3}></RefreshCw>
+          </Button>
+      </div>
+
+
+{/* Scroll Top/Bottom */}
+      <div className="fixed bottom-4 right-1 flex flex-col gap-1">
+        {showTop && (
+          <>
+            <Button
+              onClick={scrollToTop}
+              className="px-3 py-2 rounded-full bg-primary/70 text-white text-md hover:shadow-lg hover:bg-primary/90 transition-opacity"
+            >
+              ↑ 
+            </Button>
+            {/* Placeholder for future Bottom button */}
+            <Button
+              onClick={scrollToBottom}
+              className="px-3 py-2 rounded-xl bg-primary/70 text-white text-sm hover:shadow-lg hover:bg-primary/90 transition-opacity"
+            >
+              ↓ 
+            </Button>
+          </>
+        )}
+      </div>
        
       {/* Footer */}
       <footer className="mt-16 border-t pt-6 text-sm text-gray-500 flex flex-col md:flex-row justify-between items-center">
         <p>© 2025 MyPortfolio</p>
         <div className="flex gap-4 mt-2 md:mt-0">
-          <a href="#">LinkedIn</a>
-          <a href="#">GitHub</a>
-{/* <a href="#">Twitter</a> */}
+          <a href="https://www.linkedin.com/in/justin-rioux-022785335">LinkedIn</a>
+          <a href="https://github.com/3Rioux">GitHub</a>
+      {/* <a href="#">Twitter</a> */}
           {user && (
              <Link
                   to={'/tags-manager'}
@@ -567,7 +664,7 @@ export default function AdvancedSearchPage() {
         </div>
 
       </footer>
-<div>
+      <div>
           <Routes>
             <Route path="/searchprojects" element={<AdvancedSearchPage />} />
             {/* <Route path="/add-project" element={<AddProjectForm />} /> */}
