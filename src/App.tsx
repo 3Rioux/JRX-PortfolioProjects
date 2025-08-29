@@ -570,21 +570,21 @@ export default function AdvancedSearchPage() {
           </Button>
       </div>
 {/* Scroll Top/Bottom */}
-      <div className="fixed bottom-6 right-6 flex flex-col gap-1">
+      <div className="fixed bottom-4 right-1 flex flex-col gap-1">
         {showTop && (
           <>
             <Button
               onClick={scrollToTop}
               className="px-3 py-2 rounded-full bg-primary/70 text-white text-md hover:shadow-lg hover:bg-primary/90 transition-opacity"
             >
-              ↑ Top
+              ↑ 
             </Button>
             {/* Placeholder for future Bottom button */}
             <Button
               onClick={scrollToBottom}
               className="px-3 py-2 rounded-xl bg-primary/70 text-white text-sm hover:shadow-lg hover:bg-primary/90 transition-opacity"
             >
-              ↓ Bottom
+              ↓ 
             </Button>
           </>
         )}
