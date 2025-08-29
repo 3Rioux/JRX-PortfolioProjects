@@ -1,6 +1,6 @@
 'use client';
 import jrxLogoImage from './assets/Default_Logo_1024x1024.jpg';
-import { useEffect, useMemo, useState, useRef } from 'react';
+import { useEffect, useMemo, useState, useRef, useCallback } from 'react';
 import Fuse from 'fuse.js';
 
 import { Input } from '@/components/ui/input';
@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { ThemeProvider } from '@/components/theme-provider';
 import { ModeToggle } from '@/components/mode-toggle';
 
-import { Menu, X } from "lucide-react"; // icon library (shadcn/lucide)
+import { Menu, X, RefreshCw } from "lucide-react"; // icon library (shadcn/lucide)
 
 import clsx from 'clsx';
 
@@ -125,58 +125,62 @@ export default function AdvancedSearchPage() {
   //   fetchProjects();
   // }, []);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-  
-      try {
-        // 1. Fetch projects
-        const { data: projectData, error: projectError } = await supabase
-        .from('projects')
-        .select('*');
-  
-        if (projectError) {
-          console.error('Error fetching projects:', projectError.message);
-        } else {
-          setProjectData(projectData as Project[]);
-          console.log('Project data fetched:', projectData);
-        }
-  
-        // 2. Fetch tags
-        const { data: tagsData, error: tagsError } = await supabase
-          .from('tags')
-          .select('*')
-          .order('name', { ascending: true });
-  
-        if (tagsError) {
-          console.error('Error fetching tags:', tagsError.message);
-        } else {
-          console.log('Tags fetched:', tagsData);
-          
-          //store the full tag objects
-          setTagsData(tagsData as TagObj[]);
+  // Extract fetch function so it can be reused form load + Reload button 
+  const fetchData = useCallback(async () => {
+    setLoading(true);
 
-          // Extract names
-          const tagNames = (tagsData || []).map((tag) => tag.name);
-  
-          // Merge with defaultTags, remove duplicates
-          const uniqueTags = Array.from(new Set([...defaultTags, ...tagNames]));
-  
-          // Sort alphabetically
-          uniqueTags.sort((a, b) => a.localeCompare(b));
-  
-          // ✅ Set tags state
-          setAllTags(uniqueTags);
-        }
-      } catch (err) {
-        console.error('Unexpected error:', err);
+    try {
+      // 1. Fetch projects
+      const { data: projectData, error: projectError } = await supabase
+      .from('projects')
+      .select('*');
+
+      if (projectError) {
+        console.error('Error fetching projects:', projectError.message);
+      } else {
+        setProjectData(projectData as Project[]);
+        console.log('Project data fetched:', projectData);
       }
-  
-      setLoading(false);
-    };
-  
-    fetchData();
+
+      // 2. Fetch tags
+      const { data: tagsData, error: tagsError } = await supabase
+        .from('tags')
+        .select('*')
+        .order('name', { ascending: true });
+
+      if (tagsError) {
+        console.error('Error fetching tags:', tagsError.message);
+      } else {
+        console.log('Tags fetched:', tagsData);
+        
+        //store the full tag objects
+        setTagsData(tagsData as TagObj[]);
+
+        // Extract names
+        const tagNames = (tagsData || []).map((tag) => tag.name);
+
+        // Merge with defaultTags, remove duplicates
+        const uniqueTags = Array.from(new Set([...defaultTags, ...tagNames]));
+
+        // Sort alphabetically
+        uniqueTags.sort((a, b) => a.localeCompare(b));
+
+        // ✅ Set tags state
+        setAllTags(uniqueTags);
+      }
+    } catch (err) {
+      console.error('Unexpected error:', err);
+    }
+
+    setLoading(false);
   }, []);
+
+
+  // === Get Projects On Load ===
+  useEffect(() => {
+    //Call to load project on page load 
+    fetchData();
+  }, [fetchData]);
 
   const fuse = useMemo(
     () =>
@@ -425,7 +429,7 @@ export default function AdvancedSearchPage() {
             </Badge>
           ))}
         </div> */}
-
+{/* Tags Display */}
         <div className="flex flex-col gap-4 ml-2 mb-6">
           {Object.entries(groupedTags).map(([category, tags]) => (
             <div key={category}>
@@ -454,7 +458,7 @@ export default function AdvancedSearchPage() {
         {/* Divider between projects and tags  */}
         <div className='font-semibold text-lg mb-4 text-primary border-b-4 border-primary/80 dark:text-white'></div>
 
-        {/* Project Cards Grid */}
+{/* Project Display Cards Grid */}
         {loading ? (
           <p className="text-bg font-bold text-primary">Loading projects...</p>
         ) : (
@@ -518,6 +522,19 @@ export default function AdvancedSearchPage() {
             )}
           </div>
         )}
+
+{/* Reload Projects button */}
+      <div className="flex flex-col mx-auto text-center pt-2">
+          <Button 
+            className="text-xl "
+            onClick={fetchData}
+            disabled={loading}
+          >
+            <RefreshCw className="min-w-6 min-h-6"  strokeWidth={3}></RefreshCw>
+            {loading ? 'Reloading...' : 'Reload Projects'}
+            <RefreshCw className="min-w-6 min-h-6"  strokeWidth={3}></RefreshCw>
+          </Button>
+      </div>
        
       {/* Footer */}
       <footer className="mt-16 border-t pt-6 text-sm text-gray-500 flex flex-col md:flex-row justify-between items-center">
@@ -525,7 +542,7 @@ export default function AdvancedSearchPage() {
         <div className="flex gap-4 mt-2 md:mt-0">
           <a href="#">LinkedIn</a>
           <a href="#">GitHub</a>
-{/* <a href="#">Twitter</a> */}
+      {/* <a href="#">Twitter</a> */}
           {user && (
              <Link
                   to={'/tags-manager'}
