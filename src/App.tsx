@@ -27,6 +27,14 @@ import EditProjectForm from "@/components/EditProjectForm.tsx";
 import TagManagerForm from "@/components/TagManagerForm.tsx";
 import ProtectedRoute from '@/components/ProtectedRoute.tsx';
 import { useAuth } from '@/components/AuthContext';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { DropdownMenuLabel } from '@radix-ui/react-dropdown-menu';
+import { Select } from '@headlessui/react';
 
 
 type TagObj = {
@@ -53,6 +61,8 @@ export default function AdvancedSearchPage() {
 //Login:
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  const [projectsSortMode, setProjectsSortMode] = useState< "default" | "asc" | "desc">("default");
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -250,17 +260,35 @@ export default function AdvancedSearchPage() {
 
   //Filter Projects With Search bar + Tags
   const filteredProjects = useMemo(() => {
-    // First fuzzy search with title/tags
+    // 1. First fuzzy search with title/tags
     const searchResults =
       searchQuery.trim() === ''
         ? projectData
         : fuse.search(searchQuery).map((result) => result.item);
 
-    // Then filter based on selectedTags
-    return searchResults.filter((project) =>
+    // 2. Then filter based on selectedTags
+    let results = searchResults.filter((project) =>
       selectedTags.every((tag) => project.tags.includes(tag))
     );
-  }, [fuse, searchQuery, selectedTags, projectData]);
+
+    // 3. Apply sorting
+    if (projectsSortMode === "asc") {
+      results = [...results].sort((a, b) =>
+        a.title.localeCompare(b.title, undefined, { sensitivity: "base" })
+      );
+    } else if (projectsSortMode === "desc") {
+      results = [...results].sort((a, b) =>
+        b.title.localeCompare(a.title, undefined, { sensitivity: "base" })
+      );
+    }
+
+    // Then filter based on selectedTags (bypass sort)
+    // return searchResults.filter((project) =>
+    //   selectedTags.every((tag) => project.tags.includes(tag))
+    // );
+    return results;
+
+  }, [fuse, searchQuery, selectedTags, projectData, projectsSortMode]);
 
   // === Menu ===
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -513,6 +541,35 @@ export default function AdvancedSearchPage() {
         {/* Divider between projects and tags  */}
         <div className='font-semibold text-lg mb-4 text-primary border-b-4 border-primary/80 dark:text-white'></div>
 
+{/* Reload Projects button */}
+    <div className="flex justify-end gap-3 mx-auto text-center py-2">
+      <h2 className='flex items-center gap-1 text-black dark:text-white'>
+        Sort:
+      </h2>
+
+      <select
+          value={projectsSortMode}
+          onChange={(e) => setProjectsSortMode(e.target.value as "default" | "asc" | "desc")}
+          className="p-1 border rounded bg-white text-black dark:bg-gray-800 dark:text-white"
+      >
+        <option value="default">Default</option>
+        <option value="asc">Name (A → Z)</option>
+        <option value="desc">Name (Z → A)</option>
+      </select>
+
+      <Button
+        className="flex items-center gap-1 text-md cursor-pointer select-none bg-blue-600 text-white hover:bg-blue-700"
+        onClick={() => {
+          setReloadTriggered(true);
+          fetchData(); // make sure it's actually called
+        }}
+        disabled={loading}
+      >
+        <RefreshCw className="min-w-5 min-h-5" strokeWidth={3} />
+        {loading ? 'Reloading...' : 'Reload'}
+      </Button>
+    </div>
+
 {/* Project Display Cards Grid */}
         {loading ? (
           <p className="text-bg font-bold text-primary">Loading projects...</p>
@@ -581,10 +638,10 @@ export default function AdvancedSearchPage() {
 {/* Reload Projects button */}
       <div className="flex flex-col mx-auto text-center pt-2">
           <Button 
-            className="text-xl "
+            className="text-xl bg-blue-600 hover:bg-blue-700 cursor-pointer select-none"
             onClick={() => {
               setReloadTriggered(true);
-              fetchData
+              fetchData();
             }}
             disabled={loading}
           >
