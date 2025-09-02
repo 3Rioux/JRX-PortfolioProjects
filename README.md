@@ -3,7 +3,7 @@
 Link to page: https://3rioux.github.io/JRX-PortfolioProjects/
 
 
-# React + TypeScript + Vite
+# React + TypeScript + Tailwind CSS + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
