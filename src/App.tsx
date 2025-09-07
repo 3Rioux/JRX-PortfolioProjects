@@ -570,7 +570,7 @@ export default function AdvancedSearchPage() {
       </Button>
     </div>
 
-{/* Projects Display Cards Grid */}
+{/* Project Display Cards Grid */}
         {loading ? (
           <p className="text-bg font-bold text-primary">Loading projects...</p>
         ) : (
@@ -582,16 +582,15 @@ export default function AdvancedSearchPage() {
                     <img
                       src={project.image_url[0]}
                       alt={project.title}
-                      className="w-full aspect-video object-cover rounded-xl mb-3 cursor-pointer select-none transform transition-transform duration-500 hover:scale-103"
-                      onClick={() => setSelectedProject(project)}
+                      className="w-full aspect-video object-cover rounded-xl mb-3"
                     />
                   ) : (
                     <div className="aspect-video bg-gray-100 rounded-xl mb-3" />
                   )}
-                  <h2 className="font-semibold text-lg mb-1 cursor-pointer select-none" onClick={() => setSelectedProject(project)}>
+                  <h2 className="font-semibold text-lg mb-1">
                     {project.title}
                   </h2>
-                  <p className="text-sm text-gray-600 mb-2 cursor-pointer select-none" onClick={() => setSelectedProject(project)}>
+                  <p className="text-sm text-gray-600 mb-2">
                     {project.description}
                   </p>
                   <div className="flex gap-1 flex-wrap">
