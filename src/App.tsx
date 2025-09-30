@@ -21,6 +21,7 @@ import { supabase } from '@/lib/supabaseClient'; // update path if needed
 //Multi Page Routing: 
 import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import AddProjectForm from '@/components/AddProjectForm.tsx'; // Adjust the path as needed
+import BarcodeGenerator from "@/components/BarcodeGenerator.tsx";
 import LoginForm from '@/components/LoginForm.tsx';
 import ProjectModal from "@/components/ProjectModal.tsx";
 import EditProjectForm from "@/components/EditProjectForm.tsx";
@@ -746,6 +747,7 @@ export default function AdvancedSearchPage() {
               }
             />
             <Route path="/edit-project/:id" element={<EditProjectForm />} />
+            <Route path="/barcode-generator" element={<BarcodeGenerator />} />
           </Routes>
         </div>
       </div>
