@@ -26,6 +26,7 @@ import LoginForm from '@/components/LoginForm.tsx';
 import ProjectModal from "@/components/ProjectModal.tsx";
 import EditProjectForm from "@/components/EditProjectForm.tsx";
 import TagManagerForm from "@/components/TagManagerForm.tsx";
+import { JobApplicationManager } from '@/components/JobApplicationManager';
 import ProtectedRoute from '@/components/ProtectedRoute.tsx';
 import { useAuth } from '@/components/AuthContext';
 import {
@@ -708,6 +709,13 @@ export default function AdvancedSearchPage() {
             Barcode Gen
           </Link>
 
+          <Link
+              to="/job-application-manager"
+              className={'cursor-pointer select-none text-md rounded hover:bg-primary/30'}
+            >
+            Job Tracker
+          </Link>
+
           {!user ? (
             <Link
                 to="/login"
@@ -748,6 +756,7 @@ export default function AdvancedSearchPage() {
             />
             <Route path="/edit-project/:id" element={<EditProjectForm />} />
             <Route path="/barcode-generator" element={<BarcodeGenerator />} />
+            <Route path="/job-application-manager" element={<JobApplicationManager />} />
           </Routes>
         </div>
       </div>

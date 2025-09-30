@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from "react-router-dom";
 import { QRCodeCanvas } from "qrcode.react";
 import { 
   Download, 
@@ -191,6 +192,8 @@ const barcodeTypes: BarcodeType[] = [
 ];
 
 export default function BarcodeGenerator() {
+  const navigate = useNavigate();
+
   const [selectedType, setSelectedType] = useState<string>('url');
   const [formData, setFormData] = useState<Record<string, string>>({});
   //const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('');
@@ -336,6 +339,17 @@ END:VCARD`;
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-muted border rounded-xl">
+      
+      {/* Back Button */}
+      <button
+        type="button"
+        onClick={() => navigate("/JRX-PortfolioProjects/")}
+        className="mb-4 px-3 py-1 bg-gray-300 hover:bg-gray-400 text-black rounded dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
+      >
+        ← Back
+      </button>
+
+      {/* Title  */}
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
           QR Code Generator
