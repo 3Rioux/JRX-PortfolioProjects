@@ -700,7 +700,12 @@ export default function AdvancedSearchPage() {
             </Link>
           )}
 
-          
+          <Link
+              to="/barcode-generator"
+              className={'cursor-pointer select-none text-md rounded hover:bg-primary/30'}
+            >
+            Barcode Gen
+          </Link>
 
           {!user ? (
             <Link
