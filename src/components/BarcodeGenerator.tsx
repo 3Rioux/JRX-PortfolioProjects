@@ -193,7 +193,7 @@ const barcodeTypes: BarcodeType[] = [
 export default function BarcodeGenerator() {
   const [selectedType, setSelectedType] = useState<string>('url');
   const [formData, setFormData] = useState<Record<string, string>>({});
-  const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('');
+  //const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('');
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
   //const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -204,7 +204,7 @@ export default function BarcodeGenerator() {
   useEffect(() => {
     // Reset form data when type changes
     setFormData({});
-    setQrCodeDataUrl(''); //!!!Remove?
+    //setQrCodeDataUrl(''); //!!!Remove?
   }, [selectedType]);
 
   const generateQRData = (): string => {
@@ -488,4 +488,4 @@ END:VCARD`;
       </div>
     </div>
   );
-}​
+}
