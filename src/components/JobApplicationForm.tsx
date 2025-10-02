@@ -147,7 +147,7 @@ export function JobApplicationForm({ onSubmit }: JobApplicationFormProps) {
               type="date"
               value={formData.dateApplied}
               onChange={(e) => setFormData({ ...formData, dateApplied: e.target.value })}
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer ${
                 errors.dateApplied ? 'border-red-500' : 'border-gray-300'
               }`}
             />
@@ -162,7 +162,7 @@ export function JobApplicationForm({ onSubmit }: JobApplicationFormProps) {
               id="jobType"
               value={formData.jobType}
               onChange={(e) => setFormData({ ...formData, jobType: e.target.value as JobType })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
             >
               <option value="full-time">Full-Time</option>
               <option value="part-time">Part-Time</option>
@@ -182,7 +182,7 @@ export function JobApplicationForm({ onSubmit }: JobApplicationFormProps) {
               type="file"
               accept=".pdf,.doc,.docx"
               onChange={(e) => handleFileChange(e, 'resumeFile')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              className="file:cursor-pointer w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100  cursor-pointer"
             />
             {errors.resumeFile && <p className="text-red-500 text-sm mt-1">{errors.resumeFile}</p>}
             {formData.resumeFile && <p className="text-sm text-gray-600 mt-1">{formData.resumeFile.name}</p>}
@@ -197,7 +197,7 @@ export function JobApplicationForm({ onSubmit }: JobApplicationFormProps) {
               type="file"
               accept=".pdf,.doc,.docx"
               onChange={(e) => handleFileChange(e, 'coverLetterFile')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              className="file:cursor-pointer cursor-pointer w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
             />
             {errors.coverLetterFile && <p className="text-red-500 text-sm mt-1">{errors.coverLetterFile}</p>}
             {formData.coverLetterFile && <p className="text-sm text-gray-600 mt-1">{formData.coverLetterFile.name}</p>}
