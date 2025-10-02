@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { ThemeProvider } from '@/components/theme-provider';
 import { ModeToggle } from '@/components/mode-toggle';
 
-import { Menu, X, RefreshCw } from "lucide-react"; // icon library (shadcn/lucide)
+import { Menu, X, RefreshCw, LogOut } from "lucide-react"; // icon library (shadcn/lucide)
 
 import clsx from 'clsx';
 
@@ -92,6 +92,15 @@ export default function AdvancedSearchPage() {
     await supabase.auth.signOut();
     navigate('/login'); // Optional: redirect to login after logout
   };
+
+  //The right way to do it-> (Find full code in JobAppliManager.tsx)
+  // const handleSignOut = async () => {
+  //   try {
+  //     await signOut();
+  //   } catch (err) {
+  //     console.error('Error signing out:', err);
+  //   }
+  // };
 
   const genres = ['Website', 'Mobile', 'Game Dev'];
   //const types = ['Client Work', 'Case Study', 'Concept', 'Freelance'];
@@ -699,7 +708,7 @@ export default function AdvancedSearchPage() {
        
       {/* Footer */}
       <footer className="mt-16 border-t pt-6 text-sm text-gray-500 flex flex-col md:flex-row justify-between items-center">
-        <p>© 2025 MyPortfolio</p>
+        <p className='mb-1'>© 2025 MyPortfolio</p>
         <div className="flex gap-4 mt-2 md:mt-0">
           <a href="https://www.linkedin.com/in/justin-rioux-022785335">LinkedIn</a>
           <a href="https://github.com/3Rioux">GitHub</a>
@@ -738,16 +747,16 @@ export default function AdvancedSearchPage() {
             Job Tracker
           </Link>
 
-          <Link
+          {/* <Link
               to="/auth"
               className={'cursor-pointer select-none text-md rounded hover:bg-primary/30'}
             >
             auth
-          </Link>
+          </Link> */}
 
           {!user ? (
             <Link
-                to="/login"
+                to="/auth"
                 // className="text-sm bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
                 className={clsx('cursor-pointer select-none text-md')}
               >
@@ -756,9 +765,10 @@ export default function AdvancedSearchPage() {
           ) : (
             <button
               onClick={handleLogout}
-              className={clsx('cursor-pointer select-none text-md text-red-600')}
+              className="flex items-center mb-1 gap-2 px-1 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
             >
-              Logout
+              <LogOut size={14} />
+              Sign Out
             </button>
           )}
         </div>
