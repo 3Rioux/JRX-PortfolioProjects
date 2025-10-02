@@ -709,7 +709,7 @@ export default function AdvancedSearchPage() {
       {/* Footer */}
       <footer className="mt-16 border-t pt-6 text-sm text-gray-500 flex flex-col md:flex-row justify-between items-center">
         <p className='mb-1'>© 2025 MyPortfolio</p>
-        <div className="flex gap-4 mt-2 md:mt-0">
+        <div className="flex flex-wrap gap-4 mt-2 md:mt-0">
           <a href="https://www.linkedin.com/in/justin-rioux-022785335">LinkedIn</a>
           <a href="https://github.com/3Rioux">GitHub</a>
       {/* <a href="#">Twitter</a> */}
@@ -769,8 +769,7 @@ export default function AdvancedSearchPage() {
               onClick={handleLogout}
               className="flex items-center mb-1 gap-2 px-1 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
             >
-              <LogOut size={14} />
-              Sign Out
+              <LogOut size={14} />Logout
             </button>
           )}
         </div>

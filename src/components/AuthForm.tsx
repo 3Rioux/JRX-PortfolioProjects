@@ -53,13 +53,13 @@ export function AuthForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-gray-50 to-blue-100 flex items-center justify-center py-12 px-4">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-screen bg-background text-foreground flex items-center justify-center py-12 px-4">
+      <div className="max-w-md w-full space-y-8 bg-muted border rounded-xl p-4">
         <div className="text-center">
           <div className="mx-auto h-16 w-16 bg-blue-600 rounded-full flex items-center justify-center mb-4">
             <Lock className="h-8 w-8 text-white" />
           </div>
-          <h2 className="text-4xl font-bold text-gray-900 mb-2">Job Application Tracker</h2>
+          <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">Job Application Tracker</h2>
           <p className="text-gray-600">
             {isLogin ? 'Sign in to your account' : 'Create a new account'}
           </p>
@@ -115,7 +115,7 @@ export function AuthForm() {
                   className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="••••••••"
                   required
-                  minLength={6}
+                  minLength={5}
                 />
               </div>
               {!isLogin && (

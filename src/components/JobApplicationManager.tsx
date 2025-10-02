@@ -135,17 +135,17 @@ export function JobApplicationManager() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4">
-      <div className="max-w-7xl mx-auto space-y-8">
-        <div className="flex items-center justify-between mb-8">
-          <div className="text-center flex-1">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">Job Application Tracker</h1>
-            <p className="text-gray-600">Manage your job applications and track your progress</p>
+    <div className="min-h-screen bg-background text-foreground py-8 px-4">
+      <div className="max-w-7xl mx-auto space-y-8 p-8 bg-background border rounded-xl">
+        <div className="flex flex-wrap items-center justify-center md:justify-between mb-8 gap-4">
+          <div className="text-center flex-1 ">
+            <h1 className="text-4xl text-gray-900 dark:text-white mb-2 md:text-sm sm:text-xs">Job Application Tracker</h1>
+            <p className="text-gray-600 dark:text-violet-500">Manage your job applications and track your progress</p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex  flex-wrap items-center justify-center w-full md:w-auto gap-3 ">
             <button
               onClick={loadApplications}
-              className="flex items-center gap-2 px-4 py-2 bg-white text-gray-700 rounded-lg hover:bg-gray-50 transition-colors border border-gray-300"
+              className="flex items-center gap-2 px-4 py-2 text-primary-foreground shadow-xs bg-blue-600 hover:bg-blue-700 cursor-pointer select-none rounded-lg transition-colors border border-gray-300"
               title="Refresh applications"
             >
               <RefreshCw size={18} />
@@ -153,10 +153,10 @@ export function JobApplicationManager() {
             </button>
             <button
               onClick={handleSignOut}
-              className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-red-600 text-primary-foreground shadow-xs rounded-lg hover:bg-red-700 cursor-pointer select-none transition-colors"
             >
               <LogOut size={18} />
-              Sign Out
+              Logout
             </button>
           </div>
         </div>
