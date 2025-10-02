@@ -28,6 +28,8 @@ import EditProjectForm from "@/components/EditProjectForm.tsx";
 import TagManagerForm from "@/components/TagManagerForm.tsx";
 import { JobApplicationManager } from '@/components/JobApplicationManager';
 import ProtectedRoute from '@/components/ProtectedRoute.tsx';
+import { AuthForm } from '@/components/AuthForm.tsx';
+import { AuthProvider } from '@/contexts/AuthContextJobs.tsx';
 import { useAuth } from '@/components/AuthContext';
 import {
   DropdownMenu,
@@ -58,6 +60,26 @@ type Project = {
   software: { name: string; icon: string }[]; // icon is a URL
 };
 
+function AppJobLoginContent() {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <AuthForm />;
+  }
+
+  return <JobApplicationManager />;
+}
 
 export default function AdvancedSearchPage() {
 //Login:
@@ -716,6 +738,13 @@ export default function AdvancedSearchPage() {
             Job Tracker
           </Link>
 
+          <Link
+              to="/auth"
+              className={'cursor-pointer select-none text-md rounded hover:bg-primary/30'}
+            >
+            auth
+          </Link>
+
           {!user ? (
             <Link
                 to="/login"
@@ -756,7 +785,8 @@ export default function AdvancedSearchPage() {
             />
             <Route path="/edit-project/:id" element={<EditProjectForm />} />
             <Route path="/barcode-generator" element={<BarcodeGenerator />} />
-            <Route path="/job-application-manager" element={<JobApplicationManager />} />
+            <Route path="/job-application-manager" element={ <JobApplicationManager />} />
+            <Route path="/auth" element={<AuthProvider><AppJobLoginContent /> </AuthProvider>} />
           </Routes>
         </div>
       </div>
