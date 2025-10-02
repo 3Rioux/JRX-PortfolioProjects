@@ -90,7 +90,7 @@ export default function AdvancedSearchPage() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    navigate('/login'); // Optional: redirect to login after logout
+    navigate('/auth'); // Optional: redirect to login after logout
   };
 
   //The right way to do it-> (Find full code in JobAppliManager.tsx)
@@ -740,12 +740,14 @@ export default function AdvancedSearchPage() {
             Barcode Gen
           </Link>
 
-          <Link
-              to="/job-application-manager"
-              className={'cursor-pointer select-none text-md rounded hover:bg-primary/30'}
-            >
-            Job Tracker
-          </Link>
+          {user && (
+            <Link
+                to="/job-application-manager"
+                className={'cursor-pointer select-none text-md rounded hover:bg-primary/30'}
+              >
+              Job Tracker
+            </Link>
+          )}
 
           {/* <Link
               to="/auth"
