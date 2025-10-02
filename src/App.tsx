@@ -795,7 +795,7 @@ export default function AdvancedSearchPage() {
             />
             <Route path="/edit-project/:id" element={<EditProjectForm />} />
             <Route path="/barcode-generator" element={<BarcodeGenerator />} />
-            <Route path="/job-application-manager" element={ <JobApplicationManager />} />
+            <Route path="/job-application-manager" element={ <AuthProvider><JobApplicationManager /> </AuthProvider>} />
             <Route path="/auth" element={<AuthProvider><AppJobLoginContent /> </AuthProvider>} />
           </Routes>
         </div>
