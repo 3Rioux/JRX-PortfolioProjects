@@ -24,8 +24,8 @@ export function JobApplicationManager() {
     jobCategory: 'all',
   });
 
-
-  
+  //const jobAppList = document.getElementById("jobApplicationList");
+  const jobAppListRef = useRef<HTMLDivElement | null>(null);
 
   const loadApplications = async () => {
     
@@ -67,6 +67,14 @@ export function JobApplicationManager() {
       setLoading(false);
     }
   };
+
+  //need seperate to stop infinit loop of loading application 
+  useEffect(() => {
+    if (!loading && applications.length > 0 && jobAppListRef.current) {
+      // ✅ runs AFTER DOM renders
+      jobAppListRef.current.scrollIntoView({ behavior: "smooth"});
+    }
+  }, [loading, applications]);
 
   useEffect(() => {
     loadApplications();
@@ -254,14 +262,16 @@ export function JobApplicationManager() {
 
             {/* old JobList Call */}
             {/* <JobApplicationsList applications={applications} onStatusChange={handleStatusChange} /> */}
-            <JobApplicationsList
-              loadApplications={loadApplications}
-              loading={loading}
-              applications={filteredApplications}
-              // firstJobRefList= {firstJobRef}
-              onStatusChange={handleStatusChange}
-              onNotesUpdate={handleNotesUpdate}
-            />
+            <div id="jobApplicationList" ref={jobAppListRef}>
+              <JobApplicationsList
+                loadApplications={loadApplications}
+                loading={loading}
+                applications={filteredApplications}
+                // firstJobRefList= {firstJobRef}
+                onStatusChange={handleStatusChange}
+                onNotesUpdate={handleNotesUpdate}
+              />
+            </div>
           </>
         )}
       </div>

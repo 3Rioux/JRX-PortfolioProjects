@@ -66,6 +66,14 @@ export function JobApplicationsList({ applications, onStatusChange, onNotesUpdat
   if (applications.length === 0) {
     return (
       <div className="bg-white rounded-lg shadow-md p-8 text-center">
+        <button
+        onClick={loadApplications}
+        className="flex items-center gap-1 px-4 py-2 text-primary-foreground shadow-xs bg-blue-600 hover:bg-blue-700 cursor-pointer select-none rounded-lg transition-colors border border-gray-300"
+        title="Refresh applications"
+      >
+        <RefreshCw size={18} />
+        Refresh
+      </button>
         <Briefcase className="mx-auto text-gray-400 mb-4" size={48} />
         <h3 className="text-xl font-semibold text-gray-700 mb-2">No Applications Yet</h3>
         <p className="text-gray-500">Start by adding your first job application above.</p>
