@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { LogOut, RefreshCw } from 'lucide-react';
 import { JobApplicationForm } from './JobApplicationForm';
 import { AnalyticsDashboard } from './JobAnalyticsDashboard';
 import { JobApplicationsList } from './JobApplicationsList';
-import type { JobApplication, ApplicationFormData, ApplicationStatus } from '../types/jobApplication';
+import { JobSearchAndFilters } from './JobSearchAndFilters';
+import type { JobApplication, ApplicationFormData, ApplicationStatus, SearchFilters } from '../types/jobApplication';
 import { useAuth } from '@/contexts/AuthContextJobs.tsx';
 import { supabase } from '../lib/supabaseClient.ts';
 
@@ -12,8 +13,17 @@ export function JobApplicationManager() {
   const [applications, setApplications] = useState<JobApplication[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [filters, setFilters] = useState<SearchFilters>({
+    searchQuery: '',
+    jobType: 'all',
+    status: 'all',
+    jobCategory: 'all',
+  });
+
 
   const loadApplications = async () => {
+    
+    //Check if user is logged in (if not dont allow access to page)
     if (!user) return;
 
     try {
@@ -34,6 +44,8 @@ export function JobApplicationManager() {
         jobDescription: app.job_description,
         dateApplied: app.date_applied,
         jobType: app.job_type,
+        jobCategory: app.job_category,
+        notes: app.notes,
         status: app.status,
         resumeFile: null,
         coverLetterFile: null,
@@ -71,6 +83,8 @@ export function JobApplicationManager() {
           job_description: formData.jobDescription,
           date_applied: formData.dateApplied,
           job_type: formData.jobType,
+          job_category: formData.jobCategory,
+          notes: formData.notes,
           status: 'Applied',
           resume_file_name: formData.resumeFile?.name || null,
           cover_letter_file_name: formData.coverLetterFile?.name || null,
@@ -87,6 +101,8 @@ export function JobApplicationManager() {
         jobDescription: data.job_description,
         dateApplied: data.date_applied,
         jobType: data.job_type,
+        jobCategory: data.job_category,
+        notes: data.notes,
         status: data.status,
         resumeFile: formData.resumeFile,
         coverLetterFile: formData.coverLetterFile,
@@ -126,6 +142,32 @@ export function JobApplicationManager() {
     }
   };
 
+  const handleNotesUpdate = async (id: string, notes: string) => {
+    if (!user) {
+      setError('You must be logged in to update applications');
+      return;
+    }
+
+    try {
+      setError(null);
+
+      const { error: updateError } = await supabase
+        .from('job_applications')
+        .update({ notes })
+        .eq('id', id)
+        .eq('user_id', user.id);
+
+      if (updateError) throw updateError;
+
+      setApplications((prev) =>
+        prev.map((app) => (app.id === id ? { ...app, notes } : app))
+      );
+    } catch (err) {
+      console.error('Error updating notes:', err);
+      setError('Failed to update notes. Please try again.');
+    }
+  };
+
   const handleSignOut = async () => {
     try {
       await signOut();
@@ -133,6 +175,23 @@ export function JobApplicationManager() {
       console.error('Error signing out:', err);
     }
   };
+
+
+  //=== Search/Filter Jobs: ===
+  const filteredApplications = useMemo(() => {
+    return applications.filter((app) => {
+      const matchesSearch =
+        filters.searchQuery === '' ||
+        app.companyName.toLowerCase().includes(filters.searchQuery.toLowerCase()) ||
+        (app.jobCategory && app.jobCategory.toLowerCase().includes(filters.searchQuery.toLowerCase()));
+
+      const matchesJobType = filters.jobType === 'all' || app.jobType === filters.jobType;
+      const matchesStatus = filters.status === 'all' || app.status === filters.status;
+      const matchesCategory = filters.jobCategory === 'all' || app.jobCategory === filters.jobCategory;
+
+      return matchesSearch && matchesJobType && matchesStatus && matchesCategory;
+    });
+  }, [applications, filters]);
 
   return (
     <div className="min-h-screen bg-background text-foreground py-8 px-4">
@@ -177,7 +236,21 @@ export function JobApplicationManager() {
         ) : (
           <>
             <AnalyticsDashboard applications={applications} />
-            <JobApplicationsList applications={applications} onStatusChange={handleStatusChange} />
+
+            <JobSearchAndFilters
+              filters={filters}
+              onFiltersChange={setFilters}
+              resultsCount={filteredApplications.length}
+              totalCount={applications.length}
+            />
+
+            {/* old JobList Call */}
+            {/* <JobApplicationsList applications={applications} onStatusChange={handleStatusChange} /> */}
+            <JobApplicationsList
+              applications={filteredApplications}
+              onStatusChange={handleStatusChange}
+              onNotesUpdate={handleNotesUpdate}
+            />
           </>
         )}
       </div>
