@@ -1,5 +1,17 @@
 export type JobType = 'full-time' | 'part-time' | 'internship' | 'contract';
 
+export type JobCategory =
+  | 'Game Development'
+  | 'Frontend Development'
+  | 'Backend Development'
+  | 'Data Analytics'
+  | 'Mobile Development'
+  | 'DevOps'
+  | 'UI/UX Design'
+  | 'Quality Assurance'
+  | 'Project Management'
+  | 'Other';
+
 export type ApplicationStatus =
   | 'Applied'
   | 'Got Reply'
@@ -15,6 +27,8 @@ export interface JobApplication {
   jobDescription: string;
   dateApplied: string;
   jobType: JobType;
+  jobCategory: JobCategory | null;
+  notes: string | null;
   resumeFile: File | null;
   coverLetterFile: File | null;
   status: ApplicationStatus;
@@ -27,6 +41,16 @@ export interface ApplicationFormData {
   jobDescription: string;
   dateApplied: string;
   jobType: JobType;
+  jobCategory: JobCategory | null;
+  notes: string | null;
   resumeFile: File | null;
   coverLetterFile: File | null;
+}
+
+// Job Application Job Search 
+export interface SearchFilters {
+  searchQuery: string;
+  jobType: JobType | 'all';
+  status: ApplicationStatus | 'all';
+  jobCategory: JobCategory | 'all';
 }
