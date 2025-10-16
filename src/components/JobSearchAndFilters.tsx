@@ -65,13 +65,10 @@ interface SearchAndFiltersProps {
             <h3 className="text-lg font-semibold text-gray-800">Search & Filters</h3>
           </div>
           {hasActiveFilters && (
-            <button
-              onClick={handleClearFilters}
-              className="flex items-center gap-1 px-3 py-1.5 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
-            >
-              <X size={16} />
-              Clear All
-            </button>
+            <div className="flex items-center gap-2 outline-2 outline-offset-5 outline-yellow-300/50 rounded-xl ">
+              <span className="text-xs text-gray-700">Filters active</span>
+              <div className="h-3 w-3 bg-yellow-300 rounded-full animate-ping"></div>
+            </div>
           )}
         </div>
   
@@ -83,7 +80,7 @@ interface SearchAndFiltersProps {
             type="text"
             value={filters.searchQuery}
             onChange={(e) => onFiltersChange({ ...filters, searchQuery: e.target.value })}
-            placeholder="Search by company name or job category..."
+            placeholder="Search by Company or Job Category..."
             className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
@@ -150,12 +147,17 @@ interface SearchAndFiltersProps {
             <span className="font-semibold text-gray-900">{totalCount}</span> applications
           </p>
           {hasActiveFilters && (
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-500">Filters active</span>
-              <div className="h-2 w-2 bg-blue-600 rounded-full animate-pulse"></div>
-            </div>
+            <button
+              onClick={handleClearFilters}
+              className="flex items-center gap-1 px-3 py-1.5 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+            >
+              <X size={16} />
+              Clear All
+            </button>
           )}
         </div>
+
+        
       </div>
     );
   }

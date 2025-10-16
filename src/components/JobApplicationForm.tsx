@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
-import type { ApplicationFormData, JobType } from '../types/jobApplication';
+import type { ApplicationFormData, JobType, JobCategory } from '../types/jobApplication';
 
 interface JobApplicationFormProps {
   onSubmit: (application: ApplicationFormData) => void;
@@ -13,6 +13,8 @@ export function JobApplicationForm({ onSubmit }: JobApplicationFormProps) {
     jobDescription: '',
     dateApplied: new Date().toISOString().split('T')[0],
     jobType: 'full-time',
+    jobCategory: null,
+    notes: null,
     resumeFile: null,
     coverLetterFile: null,
   });
@@ -67,6 +69,8 @@ export function JobApplicationForm({ onSubmit }: JobApplicationFormProps) {
         jobDescription: '',
         dateApplied: new Date().toISOString().split('T')[0],
         jobType: 'full-time',
+        jobCategory: null,
+        notes: null,
         resumeFile: null,
         coverLetterFile: null,
       });
@@ -84,6 +88,8 @@ export function JobApplicationForm({ onSubmit }: JobApplicationFormProps) {
       <h2 className="text-2xl font-bold text-gray-800 mb-6">Add New Application</h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
+        
+{/* Job Position - Company Name  */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label htmlFor="jobPosition" className="block text-sm font-medium text-gray-700 mb-1">
@@ -119,7 +125,8 @@ export function JobApplicationForm({ onSubmit }: JobApplicationFormProps) {
             {errors.companyName && <p className="text-red-500 text-sm mt-1">{errors.companyName}</p>}
           </div>
         </div>
-
+        
+{/* Description */}
         <div>
           <label htmlFor="jobDescription" className="block text-sm font-medium text-gray-700 mb-1">
             Job Description *
@@ -137,7 +144,8 @@ export function JobApplicationForm({ onSubmit }: JobApplicationFormProps) {
           {errors.jobDescription && <p className="text-red-500 text-sm mt-1">{errors.jobDescription}</p>}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+{/* Date - Type - Category  */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label htmlFor="dateApplied" className="block text-sm font-medium text-gray-700 mb-1">
               Date Applied *
@@ -170,8 +178,49 @@ export function JobApplicationForm({ onSubmit }: JobApplicationFormProps) {
               <option value="contract">Contract</option>
             </select>
           </div>
+
+          <div>
+            <label htmlFor="jobCategory" className="block text-sm font-medium text-gray-700 mb-1">
+              Job Category
+            </label>
+            <select
+              id="jobCategory"
+              value={formData.jobCategory || ''}
+              onChange={(e) => setFormData({ ...formData, jobCategory: e.target.value as JobCategory || null })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="">Select category...</option>
+              <option value="Game Development">Game Development</option>
+              <option value="Frontend Development">Frontend Development</option>
+              <option value="Backend Development">Backend Development</option>
+              <option value="Data Analytics">Data Analytics</option>
+              <option value="Mobile Development">Mobile Development</option>
+              <option value="DevOps">DevOps</option>
+              <option value="UI/UX Design">UI/UX Design</option>
+              <option value="Quality Assurance">Quality Assurance</option>
+              <option value="Project Management">Project Management</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+        
+{/* Notes  */}
+        <div>
+          <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">
+            Notes
+            <span className="text-gray-500 text-xs ml-1">(Optional - track follow-ups, interview feedback, etc.)</span>
+          </label>
+          <textarea
+            id="notes"
+            value={formData.notes || ''}
+            onChange={(e) => setFormData({ ...formData, notes: e.target.value || null })}
+            rows={3}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Add any notes about this application..."
+          />
         </div>
 
+{/* Resume - Cover Letter  */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label htmlFor="resume" className="block text-sm font-medium text-gray-700 mb-1">
@@ -203,7 +252,8 @@ export function JobApplicationForm({ onSubmit }: JobApplicationFormProps) {
             {formData.coverLetterFile && <p className="text-sm text-gray-600 mt-1">{formData.coverLetterFile.name}</p>}
           </div>
         </div>
-
+        
+{/* Submit Button  */}
         <div className="flex justify-end pt-4">
           <button
             type="submit"

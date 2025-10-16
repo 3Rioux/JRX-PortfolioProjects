@@ -1,17 +1,24 @@
-import { useState } from 'react';
-import { Briefcase, Calendar, FileText, Building2, Tag, StickyNote, Save, CreditCard as Edit2 } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Briefcase, Calendar, FileText, Building2, Tag, StickyNote, Save, CreditCard as Edit2, RefreshCw } from 'lucide-react';
 import type { JobApplication, ApplicationStatus } from '../types/jobApplication';
+
+// import { useApplications } from '@/hooks/useApplications';
 
 interface JobApplicationsListProps {
   applications: JobApplication[];
   onStatusChange: (id: string, status: ApplicationStatus) => void;
   onNotesUpdate: (id: string, notes: string) => void;
+  loadApplications: () => void;
+  loading: any;
+  // firstJobRefList: RefObject<HTMLDivElement | null>; // 👈 accept the ref
 }
 
-export function JobApplicationsList({ applications, onStatusChange, onNotesUpdate }: JobApplicationsListProps) {
+export function JobApplicationsList({ applications, onStatusChange, onNotesUpdate, loadApplications }: JobApplicationsListProps) {
 
   const [editingNotes, setEditingNotes] = useState<string | null>(null);
   const [notesValue, setNotesValue] = useState<string>('');
+
+  const firstJobRef = useRef<HTMLDivElement | null>(null);
 
   const statuses: ApplicationStatus[] = [
     'Applied',
@@ -68,11 +75,29 @@ export function JobApplicationsList({ applications, onStatusChange, onNotesUpdat
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-    <h2 className="text-2xl font-bold text-gray-800 mb-6">My Applications</h2>
+    <div className='flex items-center justify-between pt-2' > 
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">My Applications</h2>
+      <button
+        onClick={loadApplications}
+        className="flex items-center gap-1 px-4 py-2 text-primary-foreground shadow-xs bg-blue-600 hover:bg-blue-700 cursor-pointer select-none rounded-lg transition-colors border border-gray-300"
+        title="Refresh applications"
+      >
+        <RefreshCw size={18} />
+        Refresh
+      </button>
+    </div>
 
     <div className="space-y-4">
-      {applications.map((app) => (
-        <div key={app.id} className="border border-gray-200 rounded-lg p-5 hover:shadow-md transition-shadow">
+      {applications.map((app, index) => (
+        <div 
+        key={app.id} 
+        ref={index === 0 ? firstJobRef : null}
+        tabIndex={-1}
+        onFocus={ () =>
+          index === 0 && firstJobRef.current ?
+          firstJobRef.current.focus() : console.error('-Error accessing first job element ' +  firstJobRef.current)
+        }
+         className="border border-gray-200 rounded-lg p-5 hover:shadow-md transition-shadow">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
             <div className="flex-1 space-y-3">
               <div>

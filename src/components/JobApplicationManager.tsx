@@ -1,5 +1,9 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import type { RefObject } from 'react';
 import { LogOut, RefreshCw } from 'lucide-react';
+
+import { useApplications } from '@/hooks/useApplications';
+
 import { JobApplicationForm } from './JobApplicationForm';
 import { AnalyticsDashboard } from './JobAnalyticsDashboard';
 import { JobApplicationsList } from './JobApplicationsList';
@@ -20,6 +24,8 @@ export function JobApplicationManager() {
     jobCategory: 'all',
   });
 
+
+  
 
   const loadApplications = async () => {
     
@@ -53,6 +59,7 @@ export function JobApplicationManager() {
       }));
 
       setApplications(mappedApplications);
+      // mappedApplications[0].focus();
     } catch (err) {
       console.error('Error loading applications:', err);
       setError('Failed to load applications. Please try again.');
@@ -183,6 +190,7 @@ export function JobApplicationManager() {
       const matchesSearch =
         filters.searchQuery === '' ||
         app.companyName.toLowerCase().includes(filters.searchQuery.toLowerCase()) ||
+        app.jobPosition.toLowerCase().includes(filters.searchQuery.toLowerCase()) ||
         (app.jobCategory && app.jobCategory.toLowerCase().includes(filters.searchQuery.toLowerCase()));
 
       const matchesJobType = filters.jobType === 'all' || app.jobType === filters.jobType;
@@ -201,7 +209,7 @@ export function JobApplicationManager() {
             <h1 className="text-4xl text-gray-900 dark:text-white mb-2 md:text-sm sm:text-xs">Job Application Tracker</h1>
             <p className="text-gray-600 dark:text-violet-500">Manage your job applications and track your progress</p>
           </div>
-          <div className="flex  flex-wrap items-center justify-center w-full md:w-auto gap-3 ">
+          <div className="flex flex-wrap items-center justify-center w-full md:w-auto gap-3 ">
             <button
               onClick={loadApplications}
               className="flex items-center gap-2 px-4 py-2 text-primary-foreground shadow-xs bg-blue-600 hover:bg-blue-700 cursor-pointer select-none rounded-lg transition-colors border border-gray-300"
@@ -247,7 +255,10 @@ export function JobApplicationManager() {
             {/* old JobList Call */}
             {/* <JobApplicationsList applications={applications} onStatusChange={handleStatusChange} /> */}
             <JobApplicationsList
+              loadApplications={loadApplications}
+              loading={loading}
               applications={filteredApplications}
+              // firstJobRefList= {firstJobRef}
               onStatusChange={handleStatusChange}
               onNotesUpdate={handleNotesUpdate}
             />
