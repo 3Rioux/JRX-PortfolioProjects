@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import type { RefObject } from 'react';
 import { LogOut, RefreshCw } from 'lucide-react';
 
+//Unused could remove but is a better approch for the future: (using webhooks /hooks)
 import { useApplications } from '@/hooks/useApplications';
 
 import { JobApplicationForm } from './JobApplicationForm';
