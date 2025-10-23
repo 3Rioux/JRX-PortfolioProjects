@@ -1,5 +1,5 @@
 import { BarChart3, TrendingUp, CheckCircle, XCircle } from 'lucide-react';
-import { JobApplication, ApplicationStatus } from '../types/jobApplication';
+import type { JobApplication, ApplicationStatus } from '../types/jobApplication';
 
 interface AnalyticsDashboardProps {
   applications: JobApplication[];

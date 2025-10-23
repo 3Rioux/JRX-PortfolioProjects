@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { ThemeProvider } from '@/components/theme-provider';
 import { ModeToggle } from '@/components/mode-toggle';
 
-import { Menu, X, RefreshCw } from "lucide-react"; // icon library (shadcn/lucide)
+import { Menu, X, RefreshCw, LogOut } from "lucide-react"; // icon library (shadcn/lucide)
 
 import clsx from 'clsx';
 
@@ -26,7 +26,10 @@ import LoginForm from '@/components/LoginForm.tsx';
 import ProjectModal from "@/components/ProjectModal.tsx";
 import EditProjectForm from "@/components/EditProjectForm.tsx";
 import TagManagerForm from "@/components/TagManagerForm.tsx";
+import { JobApplicationManager } from '@/components/JobApplicationManager';
 import ProtectedRoute from '@/components/ProtectedRoute.tsx';
+import { AuthForm } from '@/components/AuthForm.tsx';
+import { AuthProvider } from '@/contexts/AuthContextJobs.tsx';
 import { useAuth } from '@/components/AuthContext';
 import {
   DropdownMenu,
@@ -57,6 +60,26 @@ type Project = {
   software: { name: string; icon: string }[]; // icon is a URL
 };
 
+function AppJobLoginContent() {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <AuthForm />;
+  }
+
+  return <JobApplicationManager />;
+}
 
 export default function AdvancedSearchPage() {
 //Login:
@@ -67,8 +90,17 @@ export default function AdvancedSearchPage() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    navigate('/login'); // Optional: redirect to login after logout
+    navigate('/auth'); // Optional: redirect to login after logout
   };
+
+  //The right way to do it-> (Find full code in JobAppliManager.tsx)
+  // const handleSignOut = async () => {
+  //   try {
+  //     await signOut();
+  //   } catch (err) {
+  //     console.error('Error signing out:', err);
+  //   }
+  // };
 
   const genres = ['Website', 'Mobile', 'Game Dev'];
   //const types = ['Client Work', 'Case Study', 'Concept', 'Freelance'];
@@ -676,8 +708,8 @@ export default function AdvancedSearchPage() {
        
       {/* Footer */}
       <footer className="mt-16 border-t pt-6 text-sm text-gray-500 flex flex-col md:flex-row justify-between items-center">
-        <p>© 2025 MyPortfolio</p>
-        <div className="flex gap-4 mt-2 md:mt-0">
+        <p className='mb-1'>© 2025 MyPortfolio</p>
+        <div className="flex flex-wrap gap-4 mt-2 md:mt-0">
           <a href="https://www.linkedin.com/in/justin-rioux-022785335">LinkedIn</a>
           <a href="https://github.com/3Rioux">GitHub</a>
       {/* <a href="#">Twitter</a> */}
@@ -708,9 +740,25 @@ export default function AdvancedSearchPage() {
             Barcode Gen
           </Link>
 
+          {user && (
+            <Link
+                to="/job-application-manager"
+                className={'cursor-pointer select-none text-md rounded hover:bg-primary/30'}
+              >
+              Job Tracker
+            </Link>
+          )}
+
+          {/* <Link
+              to="/auth"
+              className={'cursor-pointer select-none text-md rounded hover:bg-primary/30'}
+            >
+            auth
+          </Link> */}
+
           {!user ? (
             <Link
-                to="/login"
+                to="/auth"
                 // className="text-sm bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
                 className={clsx('cursor-pointer select-none text-md')}
               >
@@ -719,9 +767,9 @@ export default function AdvancedSearchPage() {
           ) : (
             <button
               onClick={handleLogout}
-              className={clsx('cursor-pointer select-none text-md text-red-600')}
+              className="flex items-center mb-1 gap-2 px-1 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
             >
-              Logout
+              <LogOut size={14} />Logout
             </button>
           )}
         </div>
@@ -748,6 +796,8 @@ export default function AdvancedSearchPage() {
             />
             <Route path="/edit-project/:id" element={<EditProjectForm />} />
             <Route path="/barcode-generator" element={<BarcodeGenerator />} />
+            <Route path="/job-application-manager" element={ <AuthProvider><JobApplicationManager /> </AuthProvider>} />
+            <Route path="/auth" element={<AuthProvider><AppJobLoginContent /> </AuthProvider>} />
           </Routes>
         </div>
       </div>
