@@ -29,7 +29,9 @@ export interface JobApplication {
   jobType: JobType;
   jobCategory: JobCategory | null;
   notes: string | null;
+  resumeURL: string | null;
   resumeFile: File | null;
+  coverLetterURL: string | null;
   coverLetterFile: File | null;
   status: ApplicationStatus;
   createdAt: string;

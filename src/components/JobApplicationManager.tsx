@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import type { RefObject } from 'react';
+import { toast } from "sonner";
 import { LogOut, RefreshCw } from 'lucide-react';
 
 //Unused could remove but is a better approch for the future: (using webhooks /hooks)
@@ -54,10 +55,14 @@ export function JobApplicationManager() {
         jobCategory: app.job_category,
         notes: app.notes,
         status: app.status,
+        resumeURL: app.resume_url,
         resumeFile: null,
+        coverLetterURL: app.cover_letter_url,
         coverLetterFile: null,
         createdAt: app.created_at,
       }));
+
+
 
       setApplications(mappedApplications);
       // mappedApplications[0].focus();
@@ -84,11 +89,69 @@ export function JobApplicationManager() {
   const handleAddApplication = async (formData: ApplicationFormData) => {
     if (!user) {
       setError('You must be logged in to add applications');
+      setLoading(false);
       return;
     }
 
     try {
       setError(null);
+      setLoading(true);
+
+      //Start With Uploading Files: 
+      
+      const fileResumePath = `${formData.resumeFile?.name}`; // 👈 uploads to subfolder named by title
+
+      // const ext = `${formData.resumeFile?.type}`;
+      //const fileName = `${Date.now()}-${fileResumePath}-${Math.random().toString(8).substr(2, 5)}.${ext}`;
+
+      //Check if we have a resume if so upload it
+      if(formData.resumeFile) {
+        const { error: uploadError } = await supabase.storage
+        .from('JobApplications')
+        .upload(fileResumePath, formData.resumeFile, {
+          cacheControl: '3600',
+          upsert: false, // prevents overwriting existing files
+          contentType: formData.resumeFile?.type,
+        });
+      
+
+        if (uploadError) {
+          // setMessage('❌Image Upload failed: ' + uploadError.message);
+          setError('Failled Upload Resume File');
+          setLoading(false);
+          return;
+        }
+      }
+//backhere
+      //Get URL
+      const { data: publicResumeUrlData } = supabase.storage
+      .from('JobApplications')
+      .getPublicUrl(fileResumePath);
+
+      const fileCoverLetterPath = `${formData.coverLetterFile?.name}`; // 👈 uploads to subfolder named by title
+
+      if(formData.coverLetterFile) {
+        const { error: uploadError } = await supabase.storage
+        .from('JobApplications')
+        .upload(fileCoverLetterPath, formData.coverLetterFile, {
+          cacheControl: '3600',
+          upsert: false, // prevents overwriting existing files
+          contentType: formData.coverLetterFile?.type,
+        });
+      
+
+        if (uploadError) {
+          // setMessage('❌Image Upload failed: ' + uploadError.message);
+          setLoading(false);
+          return;
+        }
+
+      }
+
+      //Get Cover Letter URL
+      const { data: publicCoverLetterUrlData } = supabase.storage
+      .from('JobApplications')
+      .getPublicUrl(fileCoverLetterPath);
 
       const { data, error: insertError } = await supabase
         .from('job_applications')
@@ -102,7 +165,9 @@ export function JobApplicationManager() {
           job_category: formData.jobCategory,
           notes: formData.notes,
           status: 'Applied',
+          resume_url: publicResumeUrlData,
           resume_file_name: formData.resumeFile?.name || null,
+          cover_letter_url: publicCoverLetterUrlData,
           cover_letter_file_name: formData.coverLetterFile?.name || null,
         })
         .select()
@@ -120,7 +185,9 @@ export function JobApplicationManager() {
         jobCategory: data.job_category,
         notes: data.notes,
         status: data.status,
+        resumeURL: data.resume_url,        
         resumeFile: formData.resumeFile,
+        coverLetterURL: data.cover_letter_url,
         coverLetterFile: formData.coverLetterFile,
         createdAt: data.created_at,
       };

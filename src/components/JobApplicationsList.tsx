@@ -2,6 +2,11 @@ import { useState, useRef } from 'react';
 import { Briefcase, Calendar, FileText, Building2, Tag, StickyNote, Save, CreditCard as Edit2, RefreshCw } from 'lucide-react';
 import type { JobApplication, ApplicationStatus } from '../types/jobApplication';
 
+import  { indexedDBService } from '../lib/fileDBIndexed';
+import type { StoredDocument } from '../lib/fileDBIndexed';
+import { DocumentPreview } from './DocumentPreview';
+
+
 // import { useApplications } from '@/hooks/useApplications';
 
 interface JobApplicationsListProps {
@@ -17,6 +22,8 @@ export function JobApplicationsList({ applications, onStatusChange, onNotesUpdat
 
   const [editingNotes, setEditingNotes] = useState<string | null>(null);
   const [notesValue, setNotesValue] = useState<string>('');
+  // const [previewDocument, setPreviewDocument] = useState<StoredDocument | null>(null);
+  const [previewDocument, setPreviewDocument] = useState<File | null>(null);
 
   const firstJobRef = useRef<HTMLDivElement | null>(null);
 
@@ -29,12 +36,23 @@ export function JobApplicationsList({ applications, onStatusChange, onNotesUpdat
     'Denied',
   ];
 
-  // Notes State Event Handling 
-  const handleEditNotes = (app: JobApplication) => {
-    setEditingNotes(app.id);
-    setNotesValue(app.notes || '');
+  //Document Preview: 
+  const handleOpenDocument = async (application: JobApplication, type: 'resume' | 'coverLetter') => {
+    
+    var doc = application.coverLetterFile;
+    if(type == 'resume') doc = application.resumeFile;
+
+    if (doc) {
+      setPreviewDocument(doc);
+    }
   };
 
+  // Notes State Event Handling 
+  const handleEditNotes = (application: JobApplication) => {
+    setEditingNotes(application.id);
+    setNotesValue(application.notes || '');
+  };
+ 
   const handleSaveNotes = (id: string) => {
     onNotesUpdate(id, notesValue);
     setEditingNotes(null);
@@ -96,9 +114,9 @@ export function JobApplicationsList({ applications, onStatusChange, onNotesUpdat
     </div>
 
     <div className="space-y-4">
-      {applications.map((app, index) => (
+      {applications.map((application, index) => (
         <div 
-        key={app.id} 
+        key={application.id} 
         ref={index === 0 ? firstJobRef : null}
         tabIndex={-1}
         onFocus={ () =>
@@ -111,36 +129,36 @@ export function JobApplicationsList({ applications, onStatusChange, onNotesUpdat
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <Briefcase size={18} className="text-blue-600" />
-                  <h3 className="text-lg font-semibold text-gray-900">{app.jobPosition}</h3>
+                  <h3 className="text-lg font-semibold text-gray-900">{application.jobPosition}</h3>
                 </div>
                 <div className="flex items-center gap-2 text-gray-600">
                   <Building2 size={16} className="text-gray-400" />
-                  <span className="text-sm">{app.companyName}</span>
+                  <span className="text-sm">{application.companyName}</span>
                 </div>
               </div>
 
               <div className="flex flex-wrap items-center gap-3">
-                {app.jobCategory && (
+                {application.jobCategory && (
                   <div className="flex items-center gap-1 text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded">
                     <Tag size={12} />
-                    {app.jobCategory}
+                    {application.jobCategory}
                   </div>
                 )}
                 <div className="flex items-center gap-1 text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
                   <Calendar size={12} />
-                  {formatDate(app.dateApplied)}
+                  {formatDate(application.dateApplied)}
                 </div>
                 <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded capitalize">
-                  {app.jobType}
+                  {application.jobType}
                 </span>
                 <div className="flex items-center gap-1">
-                  {app.resumeFile && (
+                  {application.resumeFile && (
                     <div className="flex items-center gap-1 text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded">
                       <FileText size={12} />
                       Resume
                     </div>
                   )}
-                  {app.coverLetterFile && (
+                  {application.coverLetterFile && (
                     <div className="flex items-center gap-1 text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded">
                       <FileText size={12} />
                       Cover
@@ -149,7 +167,7 @@ export function JobApplicationsList({ applications, onStatusChange, onNotesUpdat
                 </div>
               </div>
 
-              {editingNotes === app.id ? (
+              {editingNotes === application.id ? (
                 <div className="space-y-2">
                   <textarea
                     value={notesValue}
@@ -161,7 +179,7 @@ export function JobApplicationsList({ applications, onStatusChange, onNotesUpdat
                   />
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => handleSaveNotes(app.id)}
+                      onClick={() => handleSaveNotes(application.id)}
                       className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
                     >
                       <Save size={14} />
@@ -177,7 +195,7 @@ export function JobApplicationsList({ applications, onStatusChange, onNotesUpdat
                 </div>
               ) : (
                 <div>
-                  {app.notes ? (
+                  {application.notes ? (
                     <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex-1">
@@ -185,10 +203,10 @@ export function JobApplicationsList({ applications, onStatusChange, onNotesUpdat
                             <StickyNote size={12} />
                             Notes
                           </div>
-                          <p className="text-sm text-gray-700 whitespace-pre-wrap">{app.notes}</p>
+                          <p className="text-sm text-gray-700 whitespace-pre-wrap">{application.notes}</p>
                         </div>
                         <button
-                          onClick={() => handleEditNotes(app)}
+                          onClick={() => handleEditNotes(application)}
                           className="text-yellow-700 hover:text-yellow-800"
                           title="Edit notes"
                         >
@@ -198,7 +216,7 @@ export function JobApplicationsList({ applications, onStatusChange, onNotesUpdat
                     </div>
                   ) : (
                     <button
-                      onClick={() => handleEditNotes(app)}
+                      onClick={() => handleEditNotes(application)}
                       className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
                     >
                       <StickyNote size={14} />
@@ -212,10 +230,10 @@ export function JobApplicationsList({ applications, onStatusChange, onNotesUpdat
             <div className="md:w-48">
               <label className="block text-xs font-medium text-gray-700 mb-1">Status</label>
               <select
-                value={app.status}
-                onChange={(e) => onStatusChange(app.id, e.target.value as ApplicationStatus)}
+                value={application.status}
+                onChange={(e) => onStatusChange(application.id, e.target.value as ApplicationStatus)}
                 className={`w-full px-3 py-2 rounded-lg text-sm font-medium border-0 focus:ring-2 focus:ring-blue-500 ${getStatusColor(
-                  app.status
+                  application.status
                 )}`}
               >
                 {statuses.map((status) => (
@@ -229,24 +247,68 @@ export function JobApplicationsList({ applications, onStatusChange, onNotesUpdat
             <div >
               <label className="block text-sm font-medium text-gray-700 mb-1">Documents</label>
               <div className="flex items-center gap-2">
-                {app.resumeFile && (
+                {application.resumeFile && (
                   <div className="flex items-center gap-1 text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded">
                     <FileText size={14} />
                     Resume
                   </div>
                 )}
-                {app.coverLetterFile && (
+                {application.coverLetterFile && (
                   <div className="flex items-center gap-1 text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded">
                     <FileText size={14} />
                     Cover Letter
                   </div>
                 )}
-                {!app.resumeFile && !app.coverLetterFile && (
+                {!application.resumeFile && !application.coverLetterFile && (
                   <span className="text-xs text-gray-400">No documents attached</span>
                 )}
               </div>
             </div>
+
+            <div>
+            {application.resumeFile && (
+                      <button
+                        onClick={() => handleOpenDocument(application, 'resume')}
+                        className="flex items-center gap-1 text-xs text-blue-700 bg-blue-50 px-2 py-1 rounded hover:bg-blue-100 transition-colors"
+                      >
+                        <FileText size={12} />
+                        Resume: {application.resumeFile.name}
+                      </button>
+                    )}
+                    {application.coverLetterFile && (
+                      <button
+                        onClick={() => handleOpenDocument(application, 'coverLetter')}
+                        className="flex items-center gap-1 text-xs text-blue-700 bg-blue-50 px-2 py-1 rounded hover:bg-blue-100 transition-colors"
+                      >
+                        <FileText size={12} />
+                        Cover: {application.coverLetterFile.name}
+                      </button>
+                    )}
+                    {application.resumeFile && (
+                      <div className="flex items-center gap-1 text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded">
+                        <FileText size={12} />
+                        Resume
+                      </div>
+                    )}
+                    {application.coverLetterFile && (
+                      <div className="flex items-center gap-1 text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded">
+                        <FileText size={12} />
+                        Cover
+                      </div>
+                    )}
+            </div>
+
+
+
           </div>
+          {/* {previewDocument && (
+            <DocumentPreview
+              document={previewDocument}
+              onClose={() => setPreviewDocument(null)}
+            />
+          )} */}
+
+
         </div>
       ))}
     </div>
