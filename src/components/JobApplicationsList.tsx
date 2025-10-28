@@ -5,6 +5,7 @@ import type { JobApplication, ApplicationStatus } from '../types/jobApplication'
 import  { indexedDBService } from '../lib/fileDBIndexed';
 import type { StoredDocument } from '../lib/fileDBIndexed';
 import { DocumentPreview } from './DocumentPreview';
+import { supabase } from '@/lib/supabaseClient';
 
 
 // import { useApplications } from '@/hooks/useApplications';
@@ -18,7 +19,7 @@ interface JobApplicationsListProps {
   // firstJobRefList: RefObject<HTMLDivElement | null>; // 👈 accept the ref
 }
 
-export function JobApplicationsList({ applications, onStatusChange, onNotesUpdate, loadApplications }: JobApplicationsListProps) {
+export function JobApplicationsList({applications, onStatusChange, onNotesUpdate, loadApplications }: JobApplicationsListProps) {
 
   const [editingNotes, setEditingNotes] = useState<string | null>(null);
   const [notesValue, setNotesValue] = useState<string>('');
@@ -37,13 +38,41 @@ export function JobApplicationsList({ applications, onStatusChange, onNotesUpdat
   ];
 
   //Document Preview: 
-  const handleOpenDocument = async (application: JobApplication, type: 'resume' | 'coverLetter') => {
-    
-    var doc = application.coverLetterFile;
-    if(type == 'resume') doc = application.resumeFile;
+  const handleOpenDocument = async (supabaseFileUrl: string | null, type: 'resume' | 'coverLetter') => {
+    try {
+      if (!supabaseFileUrl) {
+        console.error("No file URL provided");
+        return;
+      }
+      // var doc = application.coverLetterFile;
+      // if(type == 'resume') doc = application.resumeFile;
 
-    if (doc) {
-      setPreviewDocument(doc);
+      //ACCESS Supabase Storage for File:
+      // Fetch the file from Supabase public URL
+      const response = await fetch(supabaseFileUrl);
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch file: ${response.statusText}`);
+      }
+
+      // Convert response to Blob
+      const blob = await response.blob();
+
+      // Derive a filename from the URL (or set a custom one)
+      const fileName = supabaseFileUrl.split('/').pop() || `${type}.txt`;
+
+      // Convert Blob → File (so your DocumentPreview works)
+      const file = new File([blob], fileName, { type: blob.type });
+
+
+      if (file) {
+        setPreviewDocument(file);
+      }else {
+        console.error("Failled to set Preview File");
+      }
+
+    } catch (error) {
+      console.error("Error fetching document from Supabase:", error);
     }
   };
 
@@ -268,45 +297,55 @@ export function JobApplicationsList({ applications, onStatusChange, onNotesUpdat
             <div>
             {application.resumeFile && (
                       <button
-                        onClick={() => handleOpenDocument(application, 'resume')}
+                        onClick={() => {
+                          handleOpenDocument(application.resumeURL, 'resume')
+                        }
+                      }
                         className="flex items-center gap-1 text-xs text-blue-700 bg-blue-50 px-2 py-1 rounded hover:bg-blue-100 transition-colors"
                       >
                         <FileText size={12} />
-                        Resume: {application.resumeFile.name}
+                        Resume: {application.resumeFileName}
                       </button>
-                    )}
-                    {application.coverLetterFile && (
+            )}
+            {application.coverLetterFile && (
                       <button
-                        onClick={() => handleOpenDocument(application, 'coverLetter')}
+                        onClick={() => {
+                          
+                          handleOpenDocument(application.coverLetterURL, 'coverLetter')
+                        }
+                      }
                         className="flex items-center gap-1 text-xs text-blue-700 bg-blue-50 px-2 py-1 rounded hover:bg-blue-100 transition-colors"
                       >
                         <FileText size={12} />
-                        Cover: {application.coverLetterFile.name}
+                        Cover: {application.coverLetterFileName}
                       </button>
-                    )}
-                    {application.resumeFile && (
+            )}
+            {!application.resumeFile && (
                       <div className="flex items-center gap-1 text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded">
                         <FileText size={12} />
                         Resume
                       </div>
-                    )}
-                    {application.coverLetterFile && (
+            )}
+            {!application.coverLetterFile && (
                       <div className="flex items-center gap-1 text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded">
                         <FileText size={12} />
                         Cover
                       </div>
-                    )}
+            )}
+            {!application.resumeFile && !application.coverLetterFile && (
+                  <span className="text-xs text-gray-400">No documents attached</span>
+            )}
             </div>
 
 
 
           </div>
-          {/* {previewDocument && (
+          {previewDocument && (
             <DocumentPreview
               document={previewDocument}
               onClose={() => setPreviewDocument(null)}
             />
-          )} */}
+          )}
 
 
         </div>

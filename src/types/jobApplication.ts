@@ -31,8 +31,10 @@ export interface JobApplication {
   notes: string | null;
   resumeURL: string | null;
   resumeFile: File | null;
+  resumeFileName: string | null;
   coverLetterURL: string | null;
   coverLetterFile: File | null;
+  coverLetterFileName: string | null;
   status: ApplicationStatus;
   createdAt: string;
 }

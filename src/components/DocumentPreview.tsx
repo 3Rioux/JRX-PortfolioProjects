@@ -2,17 +2,19 @@ import { useState, useEffect, useRef } from 'react';
 import { X, Download, Copy, Maximize2, Minimize2, Save, Edit3, GripVertical } from 'lucide-react';
 
 //this needs to be checked 
-import type { StoredDocument } from '../lib/fileDBIndexed';
+// import type { StoredDocument } from '../lib/fileDBIndexed';
 import  { formatFileSize } from '../lib/fileDBIndexed';
+import type { JobApplication } from '@/types/jobApplication';
 
 interface DocumentPreviewProps {
-    document: StoredDocument;
+    // document: StoredDocument;
+    document: File;
     onClose: () => void;
     onUpdate?: (content: string) => void;
   }
 
 
-  export function DocumentPreview({ document, onClose, onUpdate }: DocumentPreviewProps) {
+  export function DocumentPreview({ document: selectedFile, onClose, onUpdate }: DocumentPreviewProps) {
     const [content, setContent] = useState<string>('');
     const [isEditing, setIsEditing] = useState(false);
     const [editedContent, setEditedContent] = useState('');
@@ -33,7 +35,7 @@ interface DocumentPreviewProps {
   
     useEffect(() => {
       loadDocument();
-    }, [document]);
+    }, [selectedFile]);
   
     useEffect(() => {
       const handleMouseMove = (e: MouseEvent) => {
@@ -69,9 +71,12 @@ interface DocumentPreviewProps {
     const loadDocument = async () => {
       try {
         setLoading(true);
-        const text = await document.blob.text();
-        setContent(text);
-        setEditedContent(text);
+        // const text = await document.blob.text();
+        const text = await selectedFile.text();
+        if(text) {
+            setContent(text);
+            setEditedContent(text);
+        }
       } catch (error) {
         console.error('Error loading document:', error);
         //toast.error('Failed to load document content');
@@ -90,14 +95,15 @@ interface DocumentPreviewProps {
     };
   
     const handleDownload = () => {
-      const url = URL.createObjectURL(document.blob);
-      const a = window.document.createElement('a');
-      a.href = url;
-      a.download = document.fileName;
-      window.document.body.appendChild(a);
-      a.click();
-      window.document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+    //   const url = URL.createObjectURL(document.blob);
+    //   const a = window.document.createElement('a');
+    //   a.href = url;
+    //   a.download = document.fileName;
+    //   window.document.body.appendChild(a);
+    //   a.click();
+    //   window.document.body.removeChild(a);
+    //   URL.revokeObjectURL(url);
+
       //toast.success('Document downloaded');
     };
   
@@ -166,7 +172,8 @@ interface DocumentPreviewProps {
           left: `${position.x}px`,
         };
   
-    const isPDF = document.fileType === 'application/pdf';
+    const isPDF = selectedFile.type === 'application/pdf';
+    console.log('isPDF? ' + selectedFile.type);
   
     return (
       <>
@@ -190,13 +197,11 @@ interface DocumentPreviewProps {
             <div className="flex items-center gap-3 flex-1 min-w-0">
               <GripVertical className="text-muted-foreground flex-shrink-0" size={20} />
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-foreground truncate">{document.fileName}</h3>
+                <h3 className="font-semibold text-foreground truncate">{selectedFile.name}</h3>
                 <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                  <span>{formatFileSize(document.fileSize)}</span>
+                  <span>{formatFileSize(selectedFile.size)}</span>
                   <span>•</span>
-                  <span>{document.fileType.split('/')[1]?.toUpperCase()}</span>
-                  <span>•</span>
-                  <span>{new Date(document.lastModified).toLocaleDateString()}</span>
+                  <span>{new Date(selectedFile.lastModified).toLocaleDateString()}</span>
                 </div>
               </div>
             </div>
@@ -271,9 +276,9 @@ interface DocumentPreviewProps {
               </div>
             ) : isPDF ? (
               <iframe
-                src={URL.createObjectURL(document.blob)}
+                src={URL.createObjectURL(selectedFile)}
                 className="w-full h-full border-0"
-                title={document.fileName}
+                title={selectedFile.name}
               />
             ) : isEditing ? (
               <textarea

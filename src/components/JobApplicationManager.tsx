@@ -56,9 +56,11 @@ export function JobApplicationManager() {
         notes: app.notes,
         status: app.status,
         resumeURL: app.resume_url,
-        resumeFile: null,
+        resumeFile: app.resume_file_name,
+        resumeFileName: app.resume_file_name,
         coverLetterURL: app.cover_letter_url,
-        coverLetterFile: null,
+        coverLetterFile: app.cover_letter_file_name,
+        coverLetterFileName: app.cover_letter_file_name,
         createdAt: app.created_at,
       }));
 
@@ -128,30 +130,30 @@ export function JobApplicationManager() {
       .from('JobApplications')
       .getPublicUrl(fileResumePath);
 
-      const fileCoverLetterPath = `${formData.coverLetterFile?.name}`; // 👈 uploads to subfolder named by title
+      // const fileCoverLetterPath = `${formData.coverLetterFile?.name}`; // 👈 uploads to subfolder named by title
 
-      if(formData.coverLetterFile) {
-        const { error: uploadError } = await supabase.storage
-        .from('JobApplications')
-        .upload(fileCoverLetterPath, formData.coverLetterFile, {
-          cacheControl: '3600',
-          upsert: false, // prevents overwriting existing files
-          contentType: formData.coverLetterFile?.type,
-        });
+      // if(formData.coverLetterFile) {
+      //   const { error: uploadError } = await supabase.storage
+      //   .from('JobApplications')
+      //   .upload(fileCoverLetterPath, formData.coverLetterFile, {
+      //     cacheControl: '3600',
+      //     upsert: false, // prevents overwriting existing files
+      //     contentType: formData.coverLetterFile?.type,
+      //   });
       
 
-        if (uploadError) {
-          // setMessage('❌Image Upload failed: ' + uploadError.message);
-          setLoading(false);
-          return;
-        }
+      //   if (uploadError) {
+      //     // setMessage('❌Image Upload failed: ' + uploadError.message);
+      //     setLoading(false);
+      //     return;
+      //   }
 
-      }
+      // }
 
-      //Get Cover Letter URL
-      const { data: publicCoverLetterUrlData } = supabase.storage
-      .from('JobApplications')
-      .getPublicUrl(fileCoverLetterPath);
+      // //Get Cover Letter URL
+      // const { data: publicCoverLetterUrlData } = supabase.storage
+      // .from('JobApplications')
+      // .getPublicUrl(fileCoverLetterPath);
 
       const { data, error: insertError } = await supabase
         .from('job_applications')
@@ -166,9 +168,9 @@ export function JobApplicationManager() {
           notes: formData.notes,
           status: 'Applied',
           resume_url: publicResumeUrlData,
-          resume_file_name: formData.resumeFile?.name || null,
-          cover_letter_url: publicCoverLetterUrlData,
-          cover_letter_file_name: formData.coverLetterFile?.name || null,
+          resume_file_name: formData.resumeFile?.name,
+          // cover_letter_url: publicCoverLetterUrlData,
+          cover_letter_file_name: formData.coverLetterFile?.name,
         })
         .select()
         .single();
@@ -187,8 +189,10 @@ export function JobApplicationManager() {
         status: data.status,
         resumeURL: data.resume_url,        
         resumeFile: formData.resumeFile,
+        resumeFileName: formData.resumeFile?.name ?? null,
         coverLetterURL: data.cover_letter_url,
         coverLetterFile: formData.coverLetterFile,
+        coverLetterFileName: formData.coverLetterFile?.name ?? null,
         createdAt: data.created_at,
       };
 
