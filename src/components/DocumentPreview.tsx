@@ -173,7 +173,7 @@ interface DocumentPreviewProps {
         };
   
     const isPDF = selectedFile.type === 'application/pdf';
-    console.log('isPDF? ' + selectedFile.type);
+    //console.log('isPDF? ' + selectedFile.type + ' ' + isPDF);
   
     return (
       <>

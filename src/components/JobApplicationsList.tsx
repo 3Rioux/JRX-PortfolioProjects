@@ -41,8 +41,10 @@ export function JobApplicationsList({applications, onStatusChange, onNotesUpdate
   const handleOpenDocument = async (supabaseFileUrl: string | null, type: 'resume' | 'coverLetter') => {
     try {
       if (!supabaseFileUrl) {
-        console.error("No file URL provided");
+        console.error("No file URL provided " + supabaseFileUrl);
         return;
+      }else {
+        console.log("The file URL provided " + supabaseFileUrl);
       }
       // var doc = application.coverLetterFile;
       // if(type == 'resume') doc = application.resumeFile;
@@ -57,13 +59,13 @@ export function JobApplicationsList({applications, onStatusChange, onNotesUpdate
 
       // Convert response to Blob
       const blob = await response.blob();
+      console.log("Fetched file type:", blob.type + "  <--- (if == text/html, it means the file wasn’t found — Supabase returned your app HTML.)"); // should be application/vnd.openxmlformats-officedocument.wordprocessingml.document
 
       // Derive a filename from the URL (or set a custom one)
       const fileName = supabaseFileUrl.split('/').pop() || `${type}.txt`;
 
       // Convert Blob → File (so your DocumentPreview works)
       const file = new File([blob], fileName, { type: blob.type });
-
 
       if (file) {
         setPreviewDocument(file);
