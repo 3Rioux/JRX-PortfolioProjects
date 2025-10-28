@@ -4,7 +4,8 @@ import { X, Download, Copy, Maximize2, Minimize2, Save, Edit3, GripVertical } fr
 //this needs to be checked 
 // import type { StoredDocument } from '../lib/fileDBIndexed';
 import  { formatFileSize } from '../lib/fileDBIndexed';
-import type { JobApplication } from '@/types/jobApplication';
+
+import * as mammoth from "mammoth";
 
 interface DocumentPreviewProps {
     // document: StoredDocument;
@@ -72,7 +73,13 @@ interface DocumentPreviewProps {
       try {
         setLoading(true);
         // const text = await document.blob.text();
-        const text = await selectedFile.text();
+        // const text = await selectedFile.text();
+        //Use Mammoth to access the docs text:
+        const arrayBuffer = await selectedFile.arrayBuffer();
+
+        const result = await mammoth.extractRawText({ arrayBuffer });
+        const text = result.value; // extracted text from the Word doc
+
         if(text) {
             setContent(text);
             setEditedContent(text);
