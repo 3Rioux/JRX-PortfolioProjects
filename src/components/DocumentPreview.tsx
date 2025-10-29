@@ -72,18 +72,48 @@ interface DocumentPreviewProps {
     const loadDocument = async () => {
       try {
         setLoading(true);
-        // const text = await document.blob.text();
-        // const text = await selectedFile.text();
-        //Use Mammoth to access the docs text:
-        const arrayBuffer = await selectedFile.arrayBuffer();
+        
+        const fileType = selectedFile.type;
+        const fileName = selectedFile.name.toLowerCase();
+    
+        // Handle PDFs
+        if (fileType === "application/pdf" || fileName.endsWith(".pdf")) {
+          setContent(""); // PDFs are rendered directly in iframe
+          return;
+        }
 
-        const result = await mammoth.extractRawText({ arrayBuffer });
-        const text = result.value; // extracted text from the Word doc
-
-        if(text) {
+        // Handle plain text
+        if (
+            fileType.startsWith("text/") ||
+            fileName.endsWith(".txt") ||
+            fileName.endsWith(".csv") ||
+            fileName.endsWith(".json")
+        ) {
+            const text = await selectedFile.text();
+            // const text = await document.blob.text();
             setContent(text);
             setEditedContent(text);
+            return;
         }
+
+        // Handle Word (.docx)
+        if (
+            fileType ===
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+            fileName.endsWith(".docx")
+        ) {
+            //Use Mammoth to access the docs text:
+            const arrayBuffer = await selectedFile.arrayBuffer();
+            const result = await mammoth.extractRawText({ arrayBuffer });
+            const text = result.value || "[No readable text found in document]";
+            setContent(text);
+            setEditedContent(text);
+            return;
+        }
+
+        // Default fallback
+        setContent("Unsupported file type or cannot preview this file.");
+
       } catch (error) {
         console.error('Error loading document:', error);
         //toast.error('Failed to load document content');

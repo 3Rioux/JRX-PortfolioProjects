@@ -10,6 +10,8 @@ export type JobCategory =
   | 'UI/UX Design'
   | 'Quality Assurance'
   | 'Project Management'
+  | 'IT Technician'
+  | 'IT Cyber Security'
   | 'Other';
 
 export type ApplicationStatus =

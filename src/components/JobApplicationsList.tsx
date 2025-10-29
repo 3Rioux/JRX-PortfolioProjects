@@ -43,7 +43,8 @@ export function JobApplicationsList({applications, onStatusChange, onNotesUpdate
       if (!supabaseFileUrl) {
         console.error("No file URL provided " + supabaseFileUrl);
         return;
-      }else {
+      }
+      else {
         console.log("The file URL provided " + supabaseFileUrl);
       }
       // var doc = application.coverLetterFile;
@@ -275,41 +276,23 @@ export function JobApplicationsList({applications, onStatusChange, onNotesUpdate
               </select>
             </div>
 
-            <div >
-              <label className="block text-sm font-medium text-gray-700 mb-1">Documents</label>
-              <div className="flex items-center gap-2">
-                {application.resumeFile && (
-                  <div className="flex items-center gap-1 text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded">
-                    <FileText size={14} />
-                    Resume
-                  </div>
-                )}
-                {application.coverLetterFile && (
-                  <div className="flex items-center gap-1 text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded">
-                    <FileText size={14} />
-                    Cover Letter
-                  </div>
-                )}
-                {!application.resumeFile && !application.coverLetterFile && (
-                  <span className="text-xs text-gray-400">No documents attached</span>
-                )}
-              </div>
-            </div>
-
+{/* Document Attached Preview: */}
             <div>
-            {application.resumeFile && (
+              <label className="block text-sm font-medium text-gray-700 mb-1">Documents</label>
+              <div >
+                {application.resumeFile && (
                       <button
                         onClick={() => {
                           handleOpenDocument(application.resumeURL, 'resume')
                         }
                       }
-                        className="flex items-center gap-1 text-xs text-blue-700 bg-blue-50 px-2 py-1 rounded hover:bg-blue-100 transition-colors"
+                        className="flex items-center gap-1 text-xs text-blue-700 text- bg-blue-50 px-2 py-1 rounded hover:bg-blue-100 transition-colors"
                       >
                         <FileText size={12} />
                         Resume: {application.resumeFileName}
                       </button>
-            )}
-            {application.coverLetterFile && (
+                )}
+                {application.coverLetterFile && (
                       <button
                         onClick={() => {
                           
@@ -321,24 +304,25 @@ export function JobApplicationsList({applications, onStatusChange, onNotesUpdate
                         <FileText size={12} />
                         Cover: {application.coverLetterFileName}
                       </button>
-            )}
-            {!application.resumeFile && (
+                )}
+                {/* If I have 1 but not the other display one of these grayed out ones else No Doc message: */}
+                {!application.resumeFile && application.coverLetterFile && (
                       <div className="flex items-center gap-1 text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded">
                         <FileText size={12} />
                         Resume
                       </div>
-            )}
-            {!application.coverLetterFile && (
+                )}
+                {!application.coverLetterFile && application.resumeFile && (
                       <div className="flex items-center gap-1 text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded">
                         <FileText size={12} />
                         Cover
                       </div>
-            )}
-            {!application.resumeFile && !application.coverLetterFile && (
+                )}
+                {!application.resumeFile && !application.coverLetterFile && (
                   <span className="text-xs text-gray-400">No documents attached</span>
-            )}
+                )}
             </div>
-
+          </div>
 
 
           </div>

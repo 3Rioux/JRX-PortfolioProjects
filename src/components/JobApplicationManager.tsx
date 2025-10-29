@@ -91,13 +91,13 @@ export function JobApplicationManager() {
   const handleAddApplication = async (formData: ApplicationFormData) => {
     if (!user) {
       setError('You must be logged in to add applications');
-      setLoading(false);
+      //setLoading(false);
       return;
     }
 
     try {
       setError(null);
-      setLoading(true);
+      //setLoading(true);
 
       //Start With Uploading Files: 
       
@@ -120,40 +120,40 @@ export function JobApplicationManager() {
         if (uploadError) {
           // setMessage('❌Image Upload failed: ' + uploadError.message);
           setError('Failled Upload Resume File');
-          setLoading(false);
+          //setLoading(false);
           return;
         }
       }
-//backhere
+
       //Get URL
       const { data: publicResumeUrlData } = supabase.storage
       .from('JobApplications')
       .getPublicUrl(fileResumePath);
 
-      // const fileCoverLetterPath = `${formData.coverLetterFile?.name}`; // 👈 uploads to subfolder named by title
+      const fileCoverLetterPath = `${formData.coverLetterFile?.name}`; // 👈 uploads to subfolder named by title
 
-      // if(formData.coverLetterFile) {
-      //   const { error: uploadError } = await supabase.storage
-      //   .from('JobApplications')
-      //   .upload(fileCoverLetterPath, formData.coverLetterFile, {
-      //     cacheControl: '3600',
-      //     upsert: false, // prevents overwriting existing files
-      //     contentType: formData.coverLetterFile?.type,
-      //   });
+      if(formData.coverLetterFile) {
+        const { error: uploadError } = await supabase.storage
+        .from('JobApplications')
+        .upload(fileCoverLetterPath, formData.coverLetterFile, {
+          cacheControl: '3600',
+          upsert: false, // prevents overwriting existing files
+          contentType: formData.coverLetterFile?.type,
+        });
       
 
-      //   if (uploadError) {
-      //     // setMessage('❌Image Upload failed: ' + uploadError.message);
-      //     setLoading(false);
-      //     return;
-      //   }
+        if (uploadError) {
+          // setMessage('❌Image Upload failed: ' + uploadError.message);
+          //setLoading(false);
+          return;
+        }
 
-      // }
+      }
 
-      // //Get Cover Letter URL
-      // const { data: publicCoverLetterUrlData } = supabase.storage
-      // .from('JobApplications')
-      // .getPublicUrl(fileCoverLetterPath);
+      //Get Cover Letter URL
+      const { data: publicCoverLetterUrlData } = supabase.storage
+      .from('JobApplications')
+      .getPublicUrl(fileCoverLetterPath);
 
       const { data, error: insertError } = await supabase
         .from('job_applications')
@@ -169,7 +169,7 @@ export function JobApplicationManager() {
           status: 'Applied',
           resume_url: publicResumeUrlData,
           resume_file_name: formData.resumeFile?.name,
-          // cover_letter_url: publicCoverLetterUrlData,
+          cover_letter_url: publicCoverLetterUrlData,
           cover_letter_file_name: formData.coverLetterFile?.name,
         })
         .select()
@@ -200,6 +200,9 @@ export function JobApplicationManager() {
     } catch (err) {
       console.error('Error adding application:', err);
       setError('Failed to add application. Please try again.');
+    }
+    finally {
+      console.log('finished Adding Application Success');
     }
   };
 
