@@ -70,6 +70,7 @@ export function JobApplicationManager() {
       // mappedApplications[0].focus();
     } catch (err) {
       console.error('Error loading applications:', err);
+      toast.error('Failed to load applications');
       setError('Failed to load applications. Please try again.');
     } finally {
       setLoading(false);
@@ -91,13 +92,11 @@ export function JobApplicationManager() {
   const handleAddApplication = async (formData: ApplicationFormData) => {
     if (!user) {
       setError('You must be logged in to add applications');
-      //setLoading(false);
       return;
     }
 
     try {
       setError(null);
-      //setLoading(true);
 
       //Start With Uploading Files: 
       
@@ -197,12 +196,14 @@ export function JobApplicationManager() {
       };
 
       setApplications((prev) => [newApplication, ...prev]);
+      toast.success('Application added successfully');
     } catch (err) {
       console.error('Error adding application:', err);
       setError('Failed to add application. Please try again.');
+      toast.error('Failed to add application');
     }
     finally {
-      console.log('finished Adding Application Success');
+      console.log('finished Adding Application');
     }
   };
 
@@ -226,9 +227,13 @@ export function JobApplicationManager() {
       setApplications((prev) =>
         prev.map((app) => (app.id === id ? { ...app, status } : app))
       );
+
+      toast.success('Status updated');
+
     } catch (err) {
       console.error('Error updating application status:', err);
       setError('Failed to update status. Please try again.');
+      toast.error('Failed to update status');
     }
   };
 
@@ -252,9 +257,13 @@ export function JobApplicationManager() {
       setApplications((prev) =>
         prev.map((app) => (app.id === id ? { ...app, notes } : app))
       );
+
+      toast.success('Notes updated');
+
     } catch (err) {
       console.error('Error updating notes:', err);
       setError('Failed to update notes. Please try again.');
+      toast.error('Failed to update notes');
     }
   };
 

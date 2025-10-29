@@ -4,6 +4,7 @@ import { X, Download, Copy, Maximize2, Minimize2, Save, Edit3, GripVertical } fr
 //this needs to be checked 
 // import type { StoredDocument } from '../lib/fileDBIndexed';
 import  { formatFileSize } from '../lib/fileDBIndexed';
+import { toast } from 'sonner';
 
 import * as mammoth from "mammoth";
 
@@ -116,7 +117,7 @@ interface DocumentPreviewProps {
 
       } catch (error) {
         console.error('Error loading document:', error);
-        //toast.error('Failed to load document content');
+        toast.error('Failed to load document content');
         setContent('Unable to load document content. The file may be binary or corrupted.');
       } finally {
         setLoading(false);
@@ -141,15 +142,15 @@ interface DocumentPreviewProps {
     //   window.document.body.removeChild(a);
     //   URL.revokeObjectURL(url);
 
-      //toast.success('Document downloaded');
+      toast.success('Document downloaded');
     };
   
     const handleCopyContent = async () => {
       try {
         await navigator.clipboard.writeText(isEditing ? editedContent : content);
-        //toast.success('Content copied to clipboard');
+        toast.success('Content copied to clipboard');
       } catch (error) {
-        //toast.error('Failed to copy content');
+        toast.error('Failed to copy content');
       }
     };
   
@@ -165,7 +166,7 @@ interface DocumentPreviewProps {
       setContent(editedContent);
       setIsEditing(false);
       setHasUnsavedChanges(false);
-      //toast.success('Changes saved');
+      toast.success('Changes saved');
     };
   
     const handleCancel = () => {
